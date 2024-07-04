@@ -10,6 +10,7 @@ Modified for multicriteria TSP
 
 
 
+from itertools import product
 import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
 
 #Create necessary classes and functions
@@ -111,7 +112,7 @@ def initialPopulation(popSize, cityList, specialInitialSolutions):
     #TODO: Hinzufügen der speziellen Initiallösungen aus specialInitialSolutions
     
     numberInitialSolutions = len(specialInitialSolutions)
-    print ("Number of special initial solutions:" + str(numberInitialSolutions))
+    # print ("Number of special initial solutions:" + str(numberInitialSolutions))
 
     for i in range(0, popSize): #TODO gegebenenfalls anpassen, falls bereits Initiallösungen hinzugefügt
         population.append(createRoute(cityList))
@@ -260,16 +261,16 @@ def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions, population, popSi
     pop = initialPopulation(popSize, population, specialInitialSolutions)
     
     #provide statistics about best initial solution with regard to chosen objective
-    print("Initial objective: " + str(1 / rankRoutes(pop,objectiveNrUsed)[0][1]))
+    # print("Initial objective: " + str(1 / rankRoutes(pop,objectiveNrUsed)[0][1]))
     bestRouteIndex = rankRoutes(pop,objectiveNrUsed)[0][0]
     bestRoute = pop[bestRouteIndex]
-    print("Initial distance : " + str(Fitness(bestRoute).routeDistance()))
-    print("Initial stress:    " + str(Fitness(bestRoute).routeStress()))
+    # print("Initial distance : " + str(Fitness(bestRoute).routeDistance()))
+    # print("Initial stress:    " + str(Fitness(bestRoute).routeStress()))
     
-    plotRoute(bestRoute, "Best initial route")
+    # plotRoute(bestRoute, "Best initial route")
     
     #plot intial population with regard to the two objectives
-    plotPopulationAndObjectiveValues(pop, "Initial Population")
+    # plotPopulationAndObjectiveValues(pop, "Initial Population")
     
     #store infos to plot progress when finished
     progressDistance = []
@@ -285,20 +286,20 @@ def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions, population, popSi
         progressStress.append(1 / rankRoutes(pop,2)[0][1])
         
     #plot progress - distance
-    plt.plot(progressDistance)
-    plt.ylabel('Distance')
-    plt.xlabel('Generation')
-    plt.title('Progress of Distance Minimization')
-    plt.show()
+    # plt.plot(progressDistance)
+    # plt.ylabel('Distance')
+    # plt.xlabel('Generation')
+    # plt.title('Progress of Distance Minimization')
+    # plt.show()
     #plot progress - stress
-    plt.plot(progressStress)
-    plt.ylabel('Stress')
-    plt.xlabel('Generation')
-    plt.title('Progress of Stress Minimization')
-    plt.show()
+    # plt.plot(progressStress)
+    # plt.ylabel('Stress')
+    # plt.xlabel('Generation')
+    # plt.title('Progress of Stress Minimization')
+    # plt.show()
     
     #provide statistics about best final solution with regard to chosen objective
-    print("Final objective: " + str(1 / rankRoutes(pop,objectiveNrUsed)[0][1]))
+    # print("Final objective: " + str(1 / rankRoutes(pop,objectiveNrUsed)[0][1]))
     bestRouteIndex = rankRoutes(pop,objectiveNrUsed)[0][0]
     bestRoute = pop[bestRouteIndex]
     
@@ -311,13 +312,13 @@ def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions, population, popSi
     for city in bestRoute:
         bestRouteIndizes.append(city.nr)
         
-    print("---- ")
-    print("City Numbers of Best Route")
-    print(bestRouteIndizes)
-    print("---- ")
+    # print("---- ")
+    # print("City Numbers of Best Route")
+    # print(bestRouteIndizes)
+    # print("---- ")
     
     #plot final population with regard to the two objectives
-    plotPopulationAndObjectiveValues(pop, "Final Population")
+    # plotPopulationAndObjectiveValues(pop, "Final Population")
     
     return bestRoute
 
@@ -329,7 +330,7 @@ random.seed(44)
 for i in range(1,26):
     cityList.append(City(nr= i, traffic=int(random.random()*40), x=int(random.random() * 200), y=int(random.random() * 200)))
     
-print(cityList)
+# print(cityList)
 
 
 def plotRoute(cityList, title):
@@ -370,7 +371,44 @@ initialSolutionsList = []
 #modify parameters popSize, eliteSize, mutationRate, generations to search for the best solution
 #modify objectiveNrUsed to use different objectives:
 # 1= Minimize distance, 2 = Minimize stress
-bestRoute = geneticAlgorithm(objectiveNrUsed=1, specialInitialSolutions = initialSolutionsList, population=cityList, popSize=100, eliteSize=20, mutationRate=0.01, generations=500)
-print(bestRoute)
+# bestRoute = geneticAlgorithm(objectiveNrUsed=1, specialInitialSolutions = initialSolutionsList, population=cityList, popSize=500, eliteSize=20, mutationRate=0.02, generations=500)
+# print(bestRoute)
 
-plotRoute(bestRoute, "Best final route")
+def evaluate_ga_parameters(objectiveNrUsed, popSize, eliteSize, mutationRate, generations, cityList, initialSolutionsList):
+    print("starting with params: ", popSize, eliteSize, mutationRate, generations)
+    bestRoute = geneticAlgorithm(objectiveNrUsed=objectiveNrUsed, specialInitialSolutions=initialSolutionsList,
+                                 population=cityList, popSize=popSize, eliteSize=eliteSize, 
+                                 mutationRate=mutationRate, generations=generations)
+    if objectiveNrUsed == 1:
+        return Fitness(bestRoute).routeDistance()
+    elif objectiveNrUsed == 2:
+        return Fitness(bestRoute).routeStress()
+
+param_space = {
+    'popSize': [50, 100, 150],
+    'eliteSize': [10, 20, 30],
+    'mutationRate': [0.002, 0.001, 0.0005],
+    'generations': [450, 500, 550]
+}
+
+# List to store results
+results = []
+
+n_samples = 20
+for _ in range(n_samples):
+    popSize = random.choice(param_space['popSize'])
+    eliteSize = random.choice(param_space['eliteSize'])
+    mutationRate = random.choice(param_space['mutationRate'])
+    generations = random.choice(param_space['generations'])
+    
+    score = evaluate_ga_parameters(objectiveNrUsed=2, popSize=popSize, eliteSize=eliteSize, 
+                                   mutationRate=mutationRate, generations=generations, 
+                                   cityList=cityList, initialSolutionsList=initialSolutionsList)
+    results.append((score, popSize, eliteSize, mutationRate, generations))
+
+# Find the best parameters
+best_result = min(results, key=lambda x: x[0])
+best_score, best_popSize, best_eliteSize, best_mutationRate, best_generations = best_result
+
+print(f'Best Score: {best_score}')
+print(f'Best Parameters - popSize: {best_popSize}, eliteSize: {best_eliteSize}, mutationRate: {best_mutationRate}, generations: {best_generations}')
