@@ -27,9 +27,7 @@ def rankRoutes(population:list[Route], objectiveNrUsed): #-> list[Route] thats o
         for i in range(0,len(population)):
             fitnessResults[i] = population[i].routeFitnessStressBased()
     elif (objectiveNrUsed == 3):
-        #TODO: passender Aufruf der bestehenden Fitnessberechnung 
-        print("Here is something missing")
-        
+        fitnessResults = rankRoutesBasedOnDominance(population=population)
     #print("sorted routes: ", sorted(fitnessResults.items(), key = operator.itemgetter(1), reverse = True))
 
     return sorted(fitnessResults.items(), key = operator.itemgetter(1), reverse = True)
@@ -43,8 +41,8 @@ def rankRoutesBasedOnDominance(population):
     distance = 0
     stress = 0
     for i in range(0,len(population)):
-        distance = Route(population[i]).routeDistance()
-        stress = Route(population[i]).routeStress() 
+        distance = population[i].routeDistance()
+        stress = population[i].routeStress() 
         fitnessValuesPerIndividuum[i] = [distance, stress, [], [], 0, 0]
     #compute number of dominated solutions
     for i in range(0,len(population)):
@@ -94,7 +92,7 @@ def computeEuclideanDistance(distanceA, distanceB, stressA, stressB):
 #Finally, we then create our new generation using the breedPopulation function 
 # and then applying mutation using the mutatePopulation function. 
 
-def nextGeneration(currentGen:list[Route], eliteSize, mutationRate, objectiveNrUsed, archiveUsed) -> list[Route]: 
+def nextGeneration(currentGen:list[Route], eliteSize, mutationRate, objectiveNrUsed, archiveUsed, archiveSize = None, archive=None) -> list[Route]: 
    # rankRoutesBasedOnDominance(currentGen)
     popRanked = rankRoutes(currentGen,objectiveNrUsed)
     if (not archiveUsed):
@@ -102,16 +100,46 @@ def nextGeneration(currentGen:list[Route], eliteSize, mutationRate, objectiveNrU
         matingpool:list[Route] = matingPool(currentGen, selectionResults)
         children:list[Route] = breedPopulation(matingpool, eliteSize)
         nextGeneration = mutatePopulation(children, mutationRate,0)
+        return nextGeneration
     else:
-        #<<<<< use archiv
-        #TODO: ein festes Archiv vorsehen wie es im ursprünglichen SPEA2 vorgesehen ist 
-        selectionResults = selectionWithArchive(popRanked)
+        # aktuelle generation: P(g)
+        # aktuelles archiv: A(g)
+
+        # Fitnessberechnung aller ergebnisse in P(g) und A(g)
+        currentGenFitness = rankRoutes(currentGen, objectiveNrUsed=3)
+        archiveFitness = rankRoutes(archive, objectiveNrUsed=3)
+
+        # Kopiere alle nicht dominierten Individuen aus P(g) und A(g) in A(g+1)
+        nonDominatedCurrentGen = determineNonDominatedArchive(currentGen, currentGenFitness)
+        nonDominatedArchive = determineNonDominatedArchive(archive, archiveFitness)
+        nextArchive = nonDominatedCurrentGen + nonDominatedArchive
+
+        # N = archiveSize
+        # |A(g+1)| > N: entferne nicht dominierte Individuen aus A(g+1)
+        if len(nextArchive) > archiveSize:
+            archiveFitness = rankRoutes(nextArchive, objectiveNrUsed=3)
+            nonDominatedData = determineNonDominatedArchive(nextArchive, archiveFitness)
+            nextArchive = [i for i in nextArchive if i not in nonDominatedData]
+                    
+        # |A(g+1)| < N: Fülle A(g+1) mit dominierten Individuen aus P(g) und A(g) auf
+        if len(nextArchive) < archiveSize:
+            dominatedCurrentGen = [i for i in currentGen if i not in nonDominatedCurrentGen]
+            dominatedArchive = [i for i in archive if i not in nonDominatedArchive]
+            nextArchive += dominatedCurrentGen + dominatedArchive
+            
+        # Turnierselektion von A(g+1)
+        nextArchiveFitness = rankRoutes(nextArchive, objectiveNrUsed=3)
+        selectionResults = selectionWithArchive(nextArchiveFitness)
+
+
         matingpool = matingPool(currentGen, selectionResults)
+        # Neue Population P(g+1)
         archiveSize = determineNonDominatedArchiveSize(popRanked)
         children = breedPopulation(matingpool, archiveSize)
         #eliteSize is used to maintain solutions that should be in an archive
         nextGeneration = mutatePopulation(children, mutationRate, eliteSize)
-    return nextGeneration
+
+        return nextGeneration, nextArchive
      
 def getCityBasedOnNr(cityList,nr):
     if (nr <= 0 or nr > len(cityList)):

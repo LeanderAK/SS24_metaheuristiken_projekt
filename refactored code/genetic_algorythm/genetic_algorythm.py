@@ -6,7 +6,7 @@ from .initial_population import initialPopulation
 import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
 
 
-def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions: list[Route], population, popSize, eliteSize, mutationRate, generations):
+def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions: list[Route], population, popSize, eliteSize, mutationRate, generations, archiveSize = None):
     #create initial population
     pop:list[Route] = initialPopulation(popSize, population, specialInitialSolutions)
     
@@ -39,14 +39,23 @@ def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions: list[Route], popu
     progressStress = []
     progressStress.append(1 / rankRoutes(pop,2)[0][1])
     
-    
     #create new generations of populations
-    for i in range(0, generations):
-        print(i, end=", ")
-        pop = nextGeneration(pop, eliteSize, mutationRate,objectiveNrUsed,archiveUsed)
-        #store infos to plot progress when finished
-        progressDistance.append(1 / rankRoutes(pop,1)[0][1])
-        progressStress.append(1 / rankRoutes(pop,2)[0][1])
+    if archiveUsed == True:
+        archive: list[Route] = []
+        for i in range(0, generations):
+            print(i, end=", ")
+            pop, archive = nextGeneration(pop, eliteSize, mutationRate,objectiveNrUsed,archiveUsed, archiveSize, archive)
+            #store infos to plot progress when finished
+            progressDistance.append(1 / rankRoutes(pop,1)[0][1])
+            progressStress.append(1 / rankRoutes(pop,2)[0][1])
+    else:
+        for i in range(0, generations):
+            print(i, end=", ")
+            pop, archive = nextGeneration(pop, eliteSize, mutationRate,objectiveNrUsed,archiveUsed, archiveSize)
+            #store infos to plot progress when finished
+            progressDistance.append(1 / rankRoutes(pop,1)[0][1])
+            progressStress.append(1 / rankRoutes(pop,2)[0][1])
+        
     print("Done!")
         
     #plot progress - distance

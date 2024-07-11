@@ -31,5 +31,5 @@ initialSolutionsList:list[Route] = []
 #modify parameters popSize, eliteSize, mutationRate, generations to search for the best solution
 #modify objectiveNrUsed to use different objectives:
 # 1= Minimize distance, 2 = Minimize stress, 3 = MinimizeBoth
-bestRoute = geneticAlgorithm(objectiveNrUsed=1, specialInitialSolutions = initialSolutionsList, population=all_cities,
-                             popSize=200, eliteSize=20, mutationRate=0.01, generations=500)
+bestRoute = geneticAlgorithm(objectiveNrUsed=3, specialInitialSolutions = initialSolutionsList, population=all_cities,
+                             popSize=50, eliteSize=5, mutationRate=0.01, generations=10, archiveSize=25) # Set archive size to 50-100% of popSize
