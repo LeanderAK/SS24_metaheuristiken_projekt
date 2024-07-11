@@ -100,7 +100,7 @@ def nextGeneration(currentGen:list[Route], eliteSize, mutationRate, objectiveNrU
     if (not archiveUsed):
         selectionResults = selection(popRanked, eliteSize)
         matingpool:list[Route] = matingPool(currentGen, selectionResults)
-        children = breedPopulation(matingpool, eliteSize)
+        children:list[Route] = breedPopulation(matingpool, eliteSize)
         nextGeneration = mutatePopulation(children, mutationRate,0)
     else:
         #<<<<< use archiv

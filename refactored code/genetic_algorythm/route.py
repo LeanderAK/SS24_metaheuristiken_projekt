@@ -16,7 +16,7 @@ class Route:
     def routeDistance(self):
         if self.distance ==0:
             pathDistance = 0
-            print("eror check: route? ", type(self.cities))
+            #print("eror check: route? ", type(self.cities))
             for i in range(0, len(self.cities)):
                 fromCity = self.cities[i]
                 toCity = None

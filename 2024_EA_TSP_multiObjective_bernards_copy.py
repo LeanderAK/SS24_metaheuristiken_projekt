@@ -13,94 +13,10 @@ import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
 
 #Create necessary classes and functions
 #Create class to handle "cities
-class City:
-    def __init__(self, nr, traffic, x, y):
-        self.nr = nr
-        #attribute used for stress calculation
-        self.traffic = traffic
-        #coordinates used for distance calculation
-        self.x = x
-        self.y = y
-    
-    #calculate distance to other city  
-    def distance(self, city):
-        xDis = abs(self.x - city.x)
-        yDis = abs(self.y - city.y)
-        distance = np.sqrt((xDis ** 2) + (yDis ** 2))
-        return distance
-    
-    #calculate stress on way to other city
-    def stress(self,city):
-        stress = self.traffic*city.traffic
-        if (self.nr > city.nr):
-            if self.nr % city.nr == 0:
-                stress = stress /2.5
-        elif self.nr > 1 and city.nr % self.nr == 0:
-            stress = stress /2.5
-        return stress
 
-    #provide information about city
-    def __repr__(self):
-        return "C"+str(self.nr)+"_"+"(" + str(self.x) + "," + str(self.y) + ")_(T:"+str(self.traffic) +")"
 
 #Create a fitness function -> its a class
-class Route:
-    def __init__(self, route: list[City]):
-        self.route:list[City] = route
-        self.distance = 0
-        self.stress = 0
-        self.fitnessDistanceBased = 0.0
-        self.fitnessStressBased = 0.0
-    
-    #fitness calculation for objective: distance
-    #1. distance calculation
-    def routeDistance(self):
-        if self.distance ==0:
-            pathDistance = 0
-            print("eror check: route? ", type(self.route))
-            for i in range(0, len(self.route)):
-                fromCity = self.route[i]
-                toCity = None
-                if i + 1 < len(self.route):
-                    toCity = self.route[i + 1]
-                else:
-                    toCity = self.route[0]
-                print("error check 1", fromCity)
-                print("error check 2", toCity)
-                print("error check 3", type(fromCity))
-                print("error check 3", type(toCity))
-                print("error check 4", fromCity.distance(toCity))
-                pathDistance += fromCity.distance(toCity)
-            self.distance = pathDistance
-        return self.distance
-    
-    #2. fitness = 1/distance
-    def routeFitnessDistanceBased(self):
-        if self.fitnessDistanceBased == 0:
-            self.fitnessDistanceBased = 1 / float(self.routeDistance())
-        return self.fitnessDistanceBased
-    
-    #fitness calculation for objective: stress
-    #1. stress calculation
-    def routeStress(self):
-        if self.stress ==0:
-            pathStress = 0
-            for i in range(0, len(self.route)):
-                fromCity = self.route[i]
-                toCity = None
-                if i + 1 < len(self.route):
-                    toCity = self.route[i + 1]
-                else:
-                    toCity = self.route[0]
-                pathStress += fromCity.stress(toCity)
-            self.stress = pathStress
-        return self.stress
-    
-    #2. fitness = 1/stress
-    def routeFitnessStressBased(self):
-        if self.fitnessStressBased == 0:
-            self.fitnessStressBased = 1 / float(self.routeStress())
-        return self.fitnessStressBased
+
 
 
 #Create our initial population

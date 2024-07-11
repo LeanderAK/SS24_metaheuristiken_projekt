@@ -20,6 +20,7 @@ def mutate(individual:Route, mutationRate) -> Route:
             
             cities[swapped] = city2
             cities[swapWith] = city1
+    individual.cities = cities
     return individual
 
 #Create function to run mutation over entire population
