@@ -95,11 +95,11 @@ def determineNonDominatedArchiveSize(popRanked):
 
 
 def isSameSolution(individuumA, individuumB):
-    length = len(individuumA)
+    length = len(individuumA.get_cities())
     i = 0
     isSameSolution = True
     while i < length and isSameSolution:
-        if (not (individuumA[i].nr == individuumB[i].nr)):
+        if (not (individuumA.cities[i].nr == individuumB.cities[i].nr)):
             isSameSolution = False
             break
         i+=1
