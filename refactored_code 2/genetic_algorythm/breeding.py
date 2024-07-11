@@ -1,5 +1,5 @@
 import random
-from .route import Fitness
+from .route import Route
 
 #Create mating pool
 def matingPool(population, selectionResults):

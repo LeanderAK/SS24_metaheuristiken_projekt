@@ -1,14 +1,14 @@
 #Final step: create the genetic algorithm
 from matplotlib import pyplot as plt
-from .route import Fitness
+from .route import Route
 
 
 def plotPopulationAndObjectiveValues(population,title):
     distance = []
     stress = []
     for route in population:
-        distance.append(Fitness(route).routeDistance())
-        stress.append(Fitness(route).routeStress())
+        distance.append(Route(route).routeDistance())
+        stress.append(Route(route).routeStress())
     plt.scatter(distance,stress,marker = "o",color="black")
     plt.ylabel('Stress')
     plt.xlabel('Distance')

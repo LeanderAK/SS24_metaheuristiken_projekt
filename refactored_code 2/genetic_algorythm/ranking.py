@@ -1,4 +1,4 @@
-from .route import Fitness
+from .route import Route
 import operator
 from .other_helper_functions import *
 
@@ -11,10 +11,10 @@ def rankRoutes(population, objectiveNrUsed):
     fitnessResults = {}
     if (objectiveNrUsed == 1):
         for i in range(0,len(population)):
-            fitnessResults[i] = Fitness(population[i]).routeFitnessDistanceBased()
+            fitnessResults[i] = Route(population[i]).routeFitnessDistanceBased()
     elif (objectiveNrUsed == 2):
         for i in range(0,len(population)):
-            fitnessResults[i] = Fitness(population[i]).routeFitnessStressBased()
+            fitnessResults[i] = Route(population[i]).routeFitnessStressBased()
     elif (objectiveNrUsed == 3):
         #TODO: passender Aufruf der bestehenden Fitnessberechnung 
         print("Here is something missing")
@@ -38,8 +38,8 @@ def rankRoutesBasedOnDominance(population):
     distance = 0
     stress = 0
     for i in range(0,len(population)):
-        distance = Fitness(population[i]).routeDistance()
-        stress = Fitness(population[i]).routeStress() 
+        distance = Route(population[i]).routeDistance()
+        stress = Route(population[i]).routeStress() 
         fitnessValuesPerIndividuum[i] = [distance, stress, [], [], 0, 0]
     #compute number of dominated solutions
     for i in range(0,len(population)):

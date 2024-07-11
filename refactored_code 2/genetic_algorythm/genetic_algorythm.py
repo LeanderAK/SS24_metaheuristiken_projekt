@@ -1,4 +1,4 @@
-from .route import Fitness
+from .route import Route
 from .city import City
 from .other_helper_functions import *
 from .ranking import *
@@ -57,8 +57,8 @@ def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions, population_genes,
         print("Initial objective: " + str(1 / rankRoutes(population,objectiveNrUsed)[0][1]))
         bestRouteIndex = rankRoutes(population,objectiveNrUsed)[0][0]
         bestRoute = population[bestRouteIndex]
-        print("Initial distance : " + str(Fitness(bestRoute).routeDistance()))
-        print("Initial stress:    " + str(Fitness(bestRoute).routeStress()))
+        print("Initial distance : " + str(Route(bestRoute).routeDistance()))
+        print("Initial stress:    " + str(Route(bestRoute).routeStress()))
         plotRoute(bestRoute, "Best initial route")
     elif(objectiveNrUsed == 3):
         print("Initial highest fitness value: " + str(rankRoutes(population,objectiveNrUsed)[0][1]))
@@ -103,8 +103,8 @@ def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions, population_genes,
         print("Final objective: " + str(1 / rankRoutes(population,objectiveNrUsed)[0][1])) 
         bestRouteIndex = rankRoutes(population,objectiveNrUsed)[0][0]
         bestRoute = population[bestRouteIndex]
-        print("Final distance : " + str(Fitness(bestRoute).routeDistance()))
-        print("Final stress:    " + str(Fitness(bestRoute).routeStress()))
+        print("Final distance : " + str(Route(bestRoute).routeDistance()))
+        print("Final stress:    " + str(Route(bestRoute).routeStress()))
         
         #Provide special initial solutions    <<<<<<<<<<<
         #print city Indizes for initial solution
