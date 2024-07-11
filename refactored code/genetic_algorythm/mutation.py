@@ -34,10 +34,10 @@ def mutatePopulation(population:list[Route], mutationRate, eliteSize) -> list[Ro
     #mating pool is sorted in order of fitness
     #here elitism instead of fixed archive
     #TODO: ein festes Archiv vorsehen wie es im ursprünglichen SPEA2 vorgesehen ist 
-    for ind in range(0, eliteSize):
-        mutatedPop.append(population[ind])
-    for ind in range(eliteSize, len(population)):
+    for i in range(0, eliteSize):
+        mutatedPop.append(population[i])
+    for i in range(eliteSize, len(population)):
     #for ind in range(0, len(population)):
-        mutatedInd = mutate(population[ind], mutationRate)
+        mutatedInd = mutate(population[i], mutationRate)
         mutatedPop.append(mutatedInd)
     return mutatedPop

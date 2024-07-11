@@ -7,8 +7,8 @@ from .selection import *
 
 import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
 
-
-def rankRoutes(population:list[Route], objectiveNrUsed): #-> list[Route] thats ot what it returns, what does it return actually?
+#put into ranking file?
+def rankRoutes(population:list[Route], objectiveNrUsed)-> list[tuple[Route,float]]: 
     """
     Returns a sorted list of the ranked route. Element [0] has the best fitness.
 
@@ -16,23 +16,32 @@ def rankRoutes(population:list[Route], objectiveNrUsed): #-> list[Route] thats o
     1. DISTANCE BASED RANKING.
     2. STRESS BASED RANKING.
     3. PARETO FITNESS BASED RANKING.
+    
+    Returns:
+    A list of tuples containing  
+        [0] the actual Route (member of the population)
+        [1] the respective fitness value that was being used to rank them (depending on the ranking method)
     """
     
-    fitnessResults = {}
+   
+    
+    fitnessResults:list[tuple[Route,float]] = []
     if (objectiveNrUsed == 1):
         for i in range(0,len(population)):
-            #fitnessResults[i] = Route(population[i]).routeFitnessDistanceBased()
-            fitnessResults[i] = population[i].routeFitnessDistanceBased()
+            fitnessResults.append((population[i],population[i].get_fitness_distance_based())) 
+            
     elif (objectiveNrUsed == 2):
         for i in range(0,len(population)):
-            fitnessResults[i] = population[i].routeFitnessStressBased()
+            fitnessResults.append((population[i],population[i].get_fitness_stress_based()))
+
     elif (objectiveNrUsed == 3):
         #TODO: passender Aufruf der bestehenden Fitnessberechnung 
         print("Here is something missing")
         
-    #print("sorted routes: ", sorted(fitnessResults.items(), key = operator.itemgetter(1), reverse = True))
 
-    return sorted(fitnessResults.items(), key = operator.itemgetter(1), reverse = True)
+    sorted_results = sorted(fitnessResults, key=lambda tuple_element: tuple_element[1],reverse = True)
+    #print("ranked sorted routes result: ", sorted_results)
+    return sorted_results
 
 #Provide Pareto-Based Fitness Calculation <<<<<<<<<<<<
 # Dictionary bei dem für jedes Individuum die zugehörigen Werte gespeichert werden
@@ -94,23 +103,32 @@ def computeEuclideanDistance(distanceA, distanceB, stressA, stressB):
 #Finally, we then create our new generation using the breedPopulation function 
 # and then applying mutation using the mutatePopulation function. 
 
+# put inside breeding file?
 def nextGeneration(currentGen:list[Route], eliteSize, mutationRate, objectiveNrUsed, archiveUsed) -> list[Route]: 
    # rankRoutesBasedOnDominance(currentGen)
-    popRanked = rankRoutes(currentGen,objectiveNrUsed)
+    popRanked:list[tuple[Route,float]] = rankRoutes(currentGen,objectiveNrUsed)
+    print("\n\n next rankRoutes",rankRoutes)
     if (not archiveUsed):
-        selectionResults = selection(popRanked, eliteSize)
-        matingpool:list[Route] = matingPool(currentGen, selectionResults)
+        matingpool:list[Route] = selection(popRanked, eliteSize)
+        #print("\n\n next selectionResults",matingpool)
+
+       # matingpool:list[Route] = matingPool(currentGen, selectionResults)
         children:list[Route] = breedPopulation(matingpool, eliteSize)
-        nextGeneration = mutatePopulation(children, mutationRate,0)
+        #print("\n\n next children",children)
+        nextGeneration:list[Route] = mutatePopulation(children, mutationRate,0)
     else:
         #<<<<< use archiv
         #TODO: ein festes Archiv vorsehen wie es im ursprünglichen SPEA2 vorgesehen ist 
-        selectionResults = selectionWithArchive(popRanked)
-        matingpool = matingPool(currentGen, selectionResults)
+        matingpool = selectionWithArchive(popRanked)
+        #matingpool = matingPool(currentGen, selectionResults)
         archiveSize = determineNonDominatedArchiveSize(popRanked)
         children = breedPopulation(matingpool, archiveSize)
+        
+
         #eliteSize is used to maintain solutions that should be in an archive
         nextGeneration = mutatePopulation(children, mutationRate, eliteSize)
+        
+    #print("\n\n next generation",nextGeneration)
     return nextGeneration
      
 def getCityBasedOnNr(cityList,nr):

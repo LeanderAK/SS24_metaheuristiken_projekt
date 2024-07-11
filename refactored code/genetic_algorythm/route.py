@@ -42,7 +42,7 @@ class Route:
         return len(self.cities)
     
     #2. fitness = 1/distance
-    def routeFitnessDistanceBased(self):
+    def get_fitness_distance_based(self):
         if self.fitnessDistanceBased == 0:
             self.fitnessDistanceBased = 1 / float(self.routeDistance())
         return self.fitnessDistanceBased
@@ -64,7 +64,11 @@ class Route:
         return self.stress
     
     #2. fitness = 1/stress
-    def routeFitnessStressBased(self):
+    def get_fitness_stress_based(self):
         if self.fitnessStressBased == 0:
             self.fitnessStressBased = 1 / float(self.routeStress())
         return self.fitnessStressBased
+    
+    def __repr__(self):
+        #return f"R d{self.routeDistance()} sF{self.fitnessDistanceBased()}"
+        return str(self.cities)

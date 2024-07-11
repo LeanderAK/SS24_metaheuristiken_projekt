@@ -8,11 +8,19 @@ import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
 
 
 #Create a selection function that will be used to make the list of parent routes
-def selection(popRanked, eliteSize):
-    selectionResults = []
+def selection(popRanked: list[tuple[Route,float]], eliteSize) ->  list[Route]:
+    selectionResults:list[Route] = []
     #TODO: Z.B. Turnierbasierte Selektion statt fitnessproportionaler Selektion
     # roulette wheel by calculating a relative fitness weight for each individual
-    df = pd.DataFrame(np.array(popRanked), columns=["Index","Fitness"])
+    
+    populationSize:int = len(popRanked)
+    #we convert to indexes for easier usage of the pandas data frame?
+    popRankedIndexes:list[tuple[int,float]] = []
+    
+    for i in range(len(popRanked)):
+        popRankedIndexes.append((i,popRanked[i][1]))
+    
+    df = pd.DataFrame(np.array(popRankedIndexes), columns=["Index","Fitness"])
     df['cum_sum'] = df.Fitness.cumsum()
     df['cum_perc'] = 100*df.cum_sum/df.Fitness.sum()
     
@@ -20,12 +28,18 @@ def selection(popRanked, eliteSize):
     for i in range(0, eliteSize):
         selectionResults.append(popRanked[i][0])
     #we compare a randomly drawn number to these weights to select our mating pool
-    for i in range(0, len(popRanked) - eliteSize):
+    for i in range(0, populationSize - eliteSize):
         pick = 100*random.random()
-        for i in range(0, len(popRanked)):
+        for i in range(0, populationSize):
             if pick <= df.iat[i,3]:
                 selectionResults.append(popRanked[i][0])
                 break
+            
+    assert isinstance(selectionResults, list), f"Expected a list, got {type(selectionResults)}"
+    assert all(isinstance(route, Route) for route in selectionResults), "Not all elements are instances of Route"
+    
+    #convert into simple list of routes
+    
     return selectionResults
 
 def selectionWithArchive(popRanked):

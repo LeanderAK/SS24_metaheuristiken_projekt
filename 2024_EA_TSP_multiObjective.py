@@ -134,6 +134,9 @@ def rankRoutes(population, objectiveNrUsed):
     elif (objectiveNrUsed == 3):
         #TODO: passender Aufruf der bestehenden Fitnessberechnung 
         print("Here is something missing")
+        
+    #print("ranked sorted routes: ", sorted(fitnessResults.items(), key = operator.itemgetter(1), reverse = True))
+    
     return sorted(fitnessResults.items(), key = operator.itemgetter(1), reverse = True)
 
 #Provide Pareto-Based Fitness Calculation <<<<<<<<<<<<
@@ -361,8 +364,11 @@ def nextGeneration(currentGen, eliteSize, mutationRate, objectiveNrUsed, archive
     popRanked = rankRoutes(currentGen,objectiveNrUsed)
     if (not archiveUsed):
         selectionResults = selection(popRanked, eliteSize)
+        
         matingpool = matingPool(currentGen, selectionResults)
+        #print("\n\n next selectionResults",matingpool)
         children = breedPopulation(matingpool, eliteSize)
+        #print("\n\n next children",children)
         nextGeneration = mutatePopulation(children, mutationRate,0)
     else:
         #<<<<< use archiv
@@ -371,8 +377,12 @@ def nextGeneration(currentGen, eliteSize, mutationRate, objectiveNrUsed, archive
         matingpool = matingPool(currentGen, selectionResults)
         archiveSize = determineNonDominatedArchiveSize(popRanked)
         children = breedPopulation(matingpool, archiveSize)
+        
+        
         #eliteSize is used to maintain solutions that should be in an archive
         nextGeneration = mutatePopulation(children, mutationRate, eliteSize)
+        
+    #print("\n\n next generation",nextGeneration)
     return nextGeneration
 
 #Final step: create the genetic algorithm
@@ -531,7 +541,11 @@ initialSolutionsList = []
  #                            popSize=100, eliteSize=20, mutationRate=0.01, generations=500)
 
 bestRoute = geneticAlgorithm(objectiveNrUsed=1, specialInitialSolutions = initialSolutionsList, population=cityList,
-                             popSize=200, eliteSize=20, mutationRate=0.01, generations=500)
+                             popSize=5, eliteSize=2, mutationRate=0.01, generations=2)
+
+#bestRoute = geneticAlgorithm(objectiveNrUsed=1, specialInitialSolutions = initialSolutionsList, population=cityList,
+#                             popSize=200, eliteSize=20, mutationRate=0.01, generations=500)
+
 #print(bestRoute)
 
 #plotRoute(bestRoute, "Best final route")

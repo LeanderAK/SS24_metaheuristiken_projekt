@@ -1,12 +1,13 @@
 import random
 from .route import Route
 
-def matingPool(population: list[Route], selectionResults) -> list[Route]:
-    matingpool:list[Route] = []
-    for i in range(0, len(selectionResults)):
-        index = selectionResults[i]
-        matingpool.append(population[index])
-    return matingpool
+# def matingPool(population: list[Route], selectionResults: list[Route]) -> list[Route]:
+#     matingpool:list[Route] = []
+#     for i in range(0, len(selectionResults)):
+#         #index = selectionResults[i]
+#         #matingpool.append(population[index])
+#         matingpool.append(selectionResults[i])
+#     return matingpool
 
 # Create a crossover function for two parents to create one child
 def breed(parent1:Route, parent2:Route) -> Route:
