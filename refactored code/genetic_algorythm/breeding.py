@@ -9,7 +9,7 @@ def matingPool(population: list[Route], selectionResults) -> list[Route]:
     return matingpool
 
 # Create a crossover function for two parents to create one child
-def breed(parent1:Route, parent2:Route):
+def breed(parent1:Route, parent2:Route) -> Route:
     child = []
     childP1 = []
     childP2 = []
@@ -30,10 +30,10 @@ def breed(parent1:Route, parent2:Route):
     childP2 = [item for item in parent2.get_cities() if item not in childP1]
 
     child = childP1 + childP2
-    return child
+    return Route(child)
 
 #Create function to run crossover over full mating pool
-def breedPopulation(matingpool: list[Route], eliteSize):
+def breedPopulation(matingpool: list[Route], eliteSize) -> list[Route]:
     children = []
     length = len(matingpool) - eliteSize
     pool = random.sample(matingpool, len(matingpool))
@@ -46,4 +46,5 @@ def breedPopulation(matingpool: list[Route], eliteSize):
     for i in range(0, length):
         child = breed(pool[i], pool[len(matingpool)-i-1])
         children.append(child)
+    
     return children

@@ -32,4 +32,4 @@ initialSolutionsList:list[Route] = []
 #modify objectiveNrUsed to use different objectives:
 # 1= Minimize distance, 2 = Minimize stress, 3 = MinimizeBoth
 bestRoute = geneticAlgorithm(objectiveNrUsed=1, specialInitialSolutions = initialSolutionsList, population=all_cities,
-                             popSize=100, eliteSize=20, mutationRate=0.01, generations=500)
+                             popSize=200, eliteSize=20, mutationRate=0.01, generations=500)
