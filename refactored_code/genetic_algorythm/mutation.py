@@ -1,35 +1,26 @@
-
-import random
-from .route import Route
-from .city import City
-
 #Create function to mutate a single route
 #we’ll use swap mutation.
 #This means that, with specified low probability, 
 #two cities will swap places in our route.
-def mutate(individual:Route, mutationRate) -> Route:
-    assert isinstance(individual, Route)
-    cities: list[City] = individual.get_cities()
-    
-    for swapped in range(individual.number_of_cities()):
+import random
+
+
+def mutate(individual, mutationRate):
+    for swapped in range(len(individual)):
         if(random.random() < mutationRate):
-            swapWith = int(random.random() * individual.number_of_cities())
+            swapWith = int(random.random() * len(individual))
             
-            city1 = cities[swapped]
-            city2 = cities[swapWith]
+            city1 = individual[swapped]
+            city2 = individual[swapWith]
             
-            cities[swapped] = city2
-            cities[swapWith] = city1
-    individual.cities = cities
+            individual[swapped] = city2
+            individual[swapWith] = city1
     return individual
 
+
 #Create function to run mutation over entire population
-def mutatePopulation(population:list[Route], mutationRate, eliteSize) -> list[Route]:
-    
-    assert isinstance(population, list)
-    assert all(isinstance(route, Route) for route in population)
-    
-    mutatedPop:list[Route] = []
+def mutatePopulation(population, mutationRate, eliteSize):
+    mutatedPop = []
     
     #mating pool is sorted in order of fitness
     #here elitism instead of fixed archive

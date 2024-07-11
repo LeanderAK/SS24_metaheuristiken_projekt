@@ -1,26 +1,29 @@
-from .route import Route
+
+import random
+from .fitness import Fitness
 from .city import City
-import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
 
-def create_random_route(cityList) -> Route:
+#Create our initial population
+#Route generator
+def createRoute(cityList):
     route = random.sample(cityList, len(cityList))
-    return Route(route)
+    return route
 
-def initialPopulation(popSize, cityList, specialInitialSolutions: list[Route]):
-    population:list[Route] = []
+#Create first "population" (list of routes)
+def initialPopulation(popSize, cityList, specialInitialSolutions):
+    population = []
     
     #TODO: Hinzufügen der speziellen Initiallösungen aus specialInitialSolutions
-    for i in range(len(specialInitialSolutions)):
-        population.append(specialInitialSolutions[i])
+    
 
     numberInitialSolutions = len(specialInitialSolutions)
     print ("Number of special initial solutions:" + str(numberInitialSolutions))
     #for i in range(0, popSize):
     for i in range(numberInitialSolutions, popSize):
-        population.append(create_random_route(cityList))
+        population.append(createRoute(cityList))
     return population
 
-def get_special_initial_solutions(all_cities:list[City]) -> list[Route]:
+def get_special_initial_solutions(all_cities:list[City]) -> list[list[City]]:
     
     # initial solution 1 -> distance
     potential_next_cities_d = all_cities.copy()
@@ -44,7 +47,7 @@ def get_special_initial_solutions(all_cities:list[City]) -> list[Route]:
         potential_next_cities_d.remove(next_city)
      
     print("\n initial solution cities: ", initial_solution_low_distance)
-    distance_optimised_route = Route(initial_solution_low_distance)
+    distance_optimised_fitness = Fitness(initial_solution_low_distance)
     
      # # initial solution 2 -> stress
     # potential_next_cities_s = cityList.copy()
@@ -68,10 +71,10 @@ def get_special_initial_solutions(all_cities:list[City]) -> list[Route]:
      
      
     # print("solution low stress: ", initial_solution_low_stress)
-    print("distance_optimised_route type: ",type(distance_optimised_route))
-    print("solution low distance: ", initial_solution_low_distance)
-    print("solution low distance - distance : ", distance_optimised_route.routeDistance())
+    #print("distance_optimised_route type: ",type(distance_optimised_route))
+    #print("solution low distance: ", initial_solution_low_distance)
+    #print("solution low distance - distance : ", distance_optimised_route.routeDistance())
     
     
     #return [initial_solution_low_distance, initial_solution_low_stress]
-    return [distance_optimised_route,distance_optimised_route,distance_optimised_route,distance_optimised_route]
+    return [initial_solution_low_distance,initial_solution_low_distance,initial_solution_low_distance,initial_solution_low_distance]

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class City:
     def __init__(self, nr, traffic, x, y):
         self.nr = nr

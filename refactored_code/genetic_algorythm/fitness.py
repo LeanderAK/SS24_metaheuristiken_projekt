@@ -1,11 +1,6 @@
-from .city import City
-
-class Route:
-    def __init__(self, cities: list[City]):
-        
-        assert isinstance(cities, list)
-        assert all(isinstance(city, City) for city in cities)
-        self.cities:list[City] = cities
+class Fitness:
+    def __init__(self, route):
+        self.route = route
         self.distance = 0
         self.stress = 0
         self.fitnessDistanceBased = 0.0
@@ -16,30 +11,16 @@ class Route:
     def routeDistance(self):
         if self.distance ==0:
             pathDistance = 0
-            #print("eror check: route? ", type(self.cities))
-            for i in range(0, len(self.cities)):
-                fromCity = self.cities[i]
+            for i in range(0, len(self.route)):
+                fromCity = self.route[i]
                 toCity = None
-                if i + 1 < len(self.cities):
-                    toCity = self.cities[i + 1]
+                if i + 1 < len(self.route):
+                    toCity = self.route[i + 1]
                 else:
-                    toCity = self.cities[0]
-                # print("error check 1", fromCity)
-                # print("error check 2", toCity)
-                # print("error check 3", type(fromCity))
-                # print("error check 3", type(toCity))
-                # print("error check 4", fromCity.distance(toCity))
+                    toCity = self.route[0]
                 pathDistance += fromCity.distance(toCity)
             self.distance = pathDistance
         return self.distance
-    
-    def get_cities(self):
-        #todo cache this
-        return self.cities
-    
-    def number_of_cities(self):
-        #TODO cache this
-        return len(self.cities)
     
     #2. fitness = 1/distance
     def routeFitnessDistanceBased(self):
@@ -52,13 +33,13 @@ class Route:
     def routeStress(self):
         if self.stress ==0:
             pathStress = 0
-            for i in range(0, len(self.cities)):
-                fromCity = self.cities[i]
+            for i in range(0, len(self.route)):
+                fromCity = self.route[i]
                 toCity = None
-                if i + 1 < len(self.cities):
-                    toCity = self.cities[i + 1]
+                if i + 1 < len(self.route):
+                    toCity = self.route[i + 1]
                 else:
-                    toCity = self.cities[0]
+                    toCity = self.route[0]
                 pathStress += fromCity.stress(toCity)
             self.stress = pathStress
         return self.stress

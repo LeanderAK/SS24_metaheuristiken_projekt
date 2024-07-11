@@ -1,4 +1,5 @@
-from genetic_algorythm.route import Route
+
+from genetic_algorythm.fitness import Fitness
 from genetic_algorythm.city import City
 from genetic_algorythm.other_helper_functions import *
 from genetic_algorythm.genetic_algorythm import geneticAlgorithm
@@ -23,7 +24,7 @@ for nr in cityNumbersRoute1:
     route1.append(getCityBasedOnNr(all_cities,nr))
     
 #initialSolutionsList = get_special_initial_solutions(all_cities)
-initialSolutionsList:list[Route] = []
+initialSolutionsList:list[Fitness] = []
 #skip for now see, weather it still works
 
 
@@ -31,5 +32,9 @@ initialSolutionsList:list[Route] = []
 #modify parameters popSize, eliteSize, mutationRate, generations to search for the best solution
 #modify objectiveNrUsed to use different objectives:
 # 1= Minimize distance, 2 = Minimize stress, 3 = MinimizeBoth
-bestRoute = geneticAlgorithm(objectiveNrUsed=1, specialInitialSolutions = initialSolutionsList, population=all_cities,
-                             popSize=200, eliteSize=20, mutationRate=0.01, generations=500)
+
+# bestRoute = geneticAlgorithm(objectiveNrUsed=1, specialInitialSolutions = initialSolutionsList, population_genes=all_cities,
+#                               popSize=5, eliteSize=2, mutationRate=0.01, generations=2)
+
+bestRoute = geneticAlgorithm(objectiveNrUsed=1, specialInitialSolutions = initialSolutionsList, population_genes=all_cities,
+                            popSize=200, eliteSize=20, mutationRate=0.01, generations=500)

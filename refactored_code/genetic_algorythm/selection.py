@@ -1,11 +1,4 @@
-from .route import Route
-from .city import City
-from .mutation import *
-from .breeding import *
-
-
-import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
-
+import numpy as np, random, operator, pandas as pd
 
 #Create a selection function that will be used to make the list of parent routes
 def selection(popRanked, eliteSize):
@@ -53,22 +46,6 @@ def selectionWithArchive(popRanked):
                 break
     return selectionResults
 
-
-
-
-    mutatedPop = []
-    
-    #mating pool is sorted in order of fitness
-    #here elitism instead of fixed archive
-    #TODO: ein festes Archiv vorsehen wie es im ursprünglichen SPEA2 vorgesehen ist 
-    for ind in range(0, eliteSize):
-        mutatedPop.append(population[ind])
-    for ind in range(eliteSize, len(population)):
-    #for ind in range(0, len(population)):
-        mutatedInd = mutate(population[ind], mutationRate)
-        mutatedPop.append(mutatedInd)
-    return mutatedPop
-
 def determineNonDominatedArchive(currentGen, popRanked):
     archive = []
     for i in range(0, len(popRanked)):
@@ -86,13 +63,13 @@ def determineNonDominatedArchive(currentGen, popRanked):
             newArchive.append(archive[i])
     return newArchive
 
-def determineNonDominatedArchiveSize(popRanked):  
+
+def determineNonDominatedArchiveSize(popRanked):
     archiveSize = 0
     for i in range(0, len(popRanked)):
         if (popRanked[i][1] > 1):
             archiveSize += 1
     return archiveSize
-
 
 def isSameSolution(individuumA, individuumB):
     length = len(individuumA)
