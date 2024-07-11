@@ -6,16 +6,35 @@ from .initial_population import initialPopulation
 import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
 
 
-def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions: list[Route], population, popSize, eliteSize, mutationRate, generations):
+def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions: list[Route], population_genes, popSize, eliteSize, mutationRate, generations):
+    """_summary_
+
+    Args:
+        objectiveNrUsed (_type_): _description_
+        specialInitialSolutions (list[Route]): _description_
+        population_genes (_type_): can be seen as the genes that are going to get switched up, in our case, its the cities
+        popSize (_type_): _description_
+        eliteSize (_type_): _description_
+        mutationRate (_type_): _description_
+        generations (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    
     #create initial population
-    pop:list[Route] = initialPopulation(popSize, population, specialInitialSolutions)
+    population:list[Route] = initialPopulation(popSize, population_genes, specialInitialSolutions)
     
     archiveUsed = False
     
     #print("initial population: ", pop)
-    rankedRoutes:list[tuple[Route,float]] = rankRoutes(pop,objectiveNrUsed)
-    bestRoute:Route = rankedRoutes[0][0]
-    bestRouteFitness:float = rankedRoutes[0][1]
+    ranked_routes_indices:list[tuple[int,float]] = rankRoutes(population,objectiveNrUsed)
+    print("ranked routes indices: ", ranked_routes_indices[0][0])
+    bestRoute:Route = population[ranked_routes_indices[0][0]]
+    print("best Route: ", bestRoute)
+    assert isinstance(bestRoute,Route)
+    
+    bestRouteFitness:float = ranked_routes_indices[0][1]
 
     #provide statistics about best initial solution with regard to chosen objective
     if (objectiveNrUsed == 1 or objectiveNrUsed == 2):          
@@ -23,29 +42,29 @@ def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions: list[Route], popu
         print("Initial distance : " + str(bestRoute.routeDistance()))
         print("Initial stress:    " + str(bestRoute.routeStress()))        
     elif(objectiveNrUsed == 3):
-        print("Initial highest fitness value: " + str(rankRoutes(pop,objectiveNrUsed)[0][1]))
-        print("Initial best distance value: " + str(1/ rankRoutes(pop,1)[0][1]))
-        print("Initial best stress value: " + str(1/ rankRoutes(pop,2)[0][1]))
+        print("Initial highest fitness value: " + str(rankRoutes(population,objectiveNrUsed)[0][1]))
+        print("Initial best distance value: " + str(1/ rankRoutes(population,1)[0][1]))
+        print("Initial best stress value: " + str(1/ rankRoutes(population,2)[0][1]))
         archiveUsed = True
     
     plotRoute(bestRoute, "Best initial route")
     #plot intial population with regard to the two objectives
-    plotPopulationAndObjectiveValues(pop, "Initial Population")
+    plotPopulationAndObjectiveValues(population, "Initial Population")
     
     #store infos to plot progress when finished
     progressDistance = []
-    progressDistance.append(1 / rankRoutes(pop,1)[0][1])
+    progressDistance.append(1 / rankRoutes(population,1)[0][1])
     progressStress = []
-    progressStress.append(1 / rankRoutes(pop,2)[0][1])
+    progressStress.append(1 / rankRoutes(population,2)[0][1])
     
     
     #create new generations of populations
     for i in range(0, generations):
         print(i, end=", ")
-        pop = nextGeneration(pop, eliteSize, mutationRate,objectiveNrUsed,archiveUsed)
+        population = nextGeneration(population, eliteSize, mutationRate,objectiveNrUsed,archiveUsed)
         #store infos to plot progress when finished
-        progressDistance.append(1 / rankRoutes(pop,1)[0][1])
-        progressStress.append(1 / rankRoutes(pop,2)[0][1])
+        progressDistance.append(1 / rankRoutes(population,1)[0][1])
+        progressStress.append(1 / rankRoutes(population,2)[0][1])
     print("Done!")
         
     #plot progress - distance
@@ -61,11 +80,11 @@ def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions: list[Route], popu
     plt.title('Progress of Stress Minimization')
     plt.show()
     
-    bestFinalRoute:Route = rankRoutes(pop,objectiveNrUsed)[0][0]
+    bestFinalRoute:Route = population[rankRoutes(population,objectiveNrUsed)[0][0]]
     
     #provide statistics about best final solution with regard to chosen objective
     if (objectiveNrUsed == 1 or objectiveNrUsed == 2):
-        print("Final objective: " + str(1 / rankRoutes(pop,objectiveNrUsed)[0][1])) 
+        print("Final objective: " + str(1 / rankRoutes(population,objectiveNrUsed)[0][1])) 
         #bestRouteIndex = rankRoutes(pop,objectiveNrUsed)[0][0]
         
         print("Final distance : " + str(bestFinalRoute.routeDistance()))
@@ -84,9 +103,9 @@ def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions: list[Route], popu
         plotRoute(bestFinalRoute, "Best final route")
         
     elif(objectiveNrUsed == 3):
-        print("Final highest fitness value: " + str(rankRoutes(pop,objectiveNrUsed)[0][1]))
-        print("Final best distance value: " + str(1/ rankRoutes(pop,1)[0][1]))
-        print("Final best stress value: " + str(1/ rankRoutes(pop,2)[0][1]))
+        print("Final highest fitness value: " + str(rankRoutes(population,objectiveNrUsed)[0][1]))
+        print("Final best distance value: " + str(1/ rankRoutes(population,1)[0][1]))
+        print("Final best stress value: " + str(1/ rankRoutes(population,2)[0][1]))
         #bestRouteIndex = rankRoutes(pop,objectiveNrUsed)[0][0]
         #bestRouteTuple = pop[bestRouteIndex]
         #TODO: ein festes Archiv vorsehen wie es im ursprünglichen SPEA2 vorgesehen ist
@@ -94,7 +113,7 @@ def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions: list[Route], popu
         
         
     #plot final population with regard to the two objectives
-    plotPopulationAndObjectiveValues(pop, "Final Population")
+    plotPopulationAndObjectiveValues(population, "Final Population")
     
 
     

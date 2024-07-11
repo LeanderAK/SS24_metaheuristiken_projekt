@@ -1,4 +1,5 @@
-from genetic_algorythm.route import Route
+
+from genetic_algorythm.route import Fitness
 from genetic_algorythm.city import City
 from genetic_algorythm.other_helper_functions import *
 from genetic_algorythm.genetic_algorythm import geneticAlgorithm
@@ -23,7 +24,7 @@ for nr in cityNumbersRoute1:
     route1.append(getCityBasedOnNr(all_cities,nr))
     
 #initialSolutionsList = get_special_initial_solutions(all_cities)
-initialSolutionsList:list[Route] = []
+initialSolutionsList:list[Fitness] = []
 #skip for now see, weather it still works
 
 

@@ -8,7 +8,7 @@ from .selection import *
 import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
 
 #put into ranking file?
-def rankRoutes(population:list[Route], objectiveNrUsed)-> list[tuple[Route,float]]: 
+def rankRoutes(population:list[Route], objectiveNrUsed)-> list[tuple[int,float]]: 
     """
     Returns a sorted list of the ranked route. Element [0] has the best fitness.
 
@@ -19,29 +19,33 @@ def rankRoutes(population:list[Route], objectiveNrUsed)-> list[tuple[Route,float
     
     Returns:
     A list of tuples containing  
-        [0] the actual Route (member of the population)
+        [0] the population index of the actual Route (member of the population)
         [1] the respective fitness value that was being used to rank them (depending on the ranking method)
     """
     
    
     
-    fitnessResults:list[tuple[Route,float]] = []
+    fitnessResults = list[tuple[int,float]] = []
     if (objectiveNrUsed == 1):
         for i in range(0,len(population)):
-            fitnessResults.append((population[i],population[i].get_fitness_distance_based())) 
-            
+            #fitnessResults[i] = population[i].get_fitness_distance_based()
+            fitnessResults.append((i,population[i].get_fitness_distance_based()))
     elif (objectiveNrUsed == 2):
         for i in range(0,len(population)):
-            fitnessResults.append((population[i],population[i].get_fitness_stress_based()))
-
+            #fitnessResults[i] = population[i].get_fitness_stress_based()
+            fitnessResults.append((i,population[i].get_fitness_stress_based()))
     elif (objectiveNrUsed == 3):
         #TODO: passender Aufruf der bestehenden Fitnessberechnung 
         print("Here is something missing")
         
+    #print("ranked sorted routes: ", sorted(fitnessResults.items(), key = operator.itemgetter(1), reverse = True))
+    #if (objectiveNrUsed == 1):
+        #print("before sorting ranked: ", fitnessResults)
+    #sorted_values = sorted(fitnessResults.items(), key = operator.itemgetter(1), reverse = True)
+    sorted_values = sorted(fitnessResults, key = lambda x: x[1] , reverse = True)
+     
+    return sorted_values
 
-    sorted_results = sorted(fitnessResults, key=lambda tuple_element: tuple_element[1],reverse = True)
-    #print("ranked sorted routes result: ", sorted_results)
-    return sorted_results
 
 #Provide Pareto-Based Fitness Calculation <<<<<<<<<<<<
 # Dictionary bei dem für jedes Individuum die zugehörigen Werte gespeichert werden
@@ -106,14 +110,18 @@ def computeEuclideanDistance(distanceA, distanceB, stressA, stressB):
 # put inside breeding file?
 def nextGeneration(currentGen:list[Route], eliteSize, mutationRate, objectiveNrUsed, archiveUsed) -> list[Route]: 
    # rankRoutesBasedOnDominance(currentGen)
-    popRanked:list[tuple[Route,float]] = rankRoutes(currentGen,objectiveNrUsed)
-    print("\n\n next rankRoutes",rankRoutes)
+    #print("\n\n pop pre ranked",currentGen)
+
+    popRanked:list[tuple[int,float]] = rankRoutes(currentGen,objectiveNrUsed)
+    #print("\n\n pop ranked",popRanked)
+    #print("\n\n next rankRoutes",rankRoutes)
     if (not archiveUsed):
-        matingpool:list[Route] = selection(popRanked, eliteSize)
+        
+        selectionResults:list[int] = selection(popRanked, eliteSize)
         #print("\n\n next selectionResults",matingpool)
 
-       # matingpool:list[Route] = matingPool(currentGen, selectionResults)
-        children:list[Route] = breedPopulation(matingpool, eliteSize)
+        mating_pool:list[Route] = matingPool(currentGen, selectionResults)
+        children:list[Route] = breedPopulation(mating_pool, eliteSize)
         #print("\n\n next children",children)
         nextGeneration:list[Route] = mutatePopulation(children, mutationRate,0)
     else:

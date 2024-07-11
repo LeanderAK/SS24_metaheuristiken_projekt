@@ -1,21 +1,10 @@
-from .route import Route
-from .city import City
-from .mutation import *
-from .breeding import *
-
-
-import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
-
+import numpy as np, random, operator, pandas as pd
 
 #Create a selection function that will be used to make the list of parent routes
-def selection(popRanked: list[tuple[int,float]], eliteSize) ->  list[int]:
-    selectionResults:list[int] = []
+def selection(popRanked, eliteSize):
+    selectionResults = []
     #TODO: Z.B. Turnierbasierte Selektion statt fitnessproportionaler Selektion
     # roulette wheel by calculating a relative fitness weight for each individual
-    
-    populationSize:int = len(popRanked)
-    #we convert to indexes for easier usage of the pandas data frame?
-    
     df = pd.DataFrame(np.array(popRanked), columns=["Index","Fitness"])
     df['cum_sum'] = df.Fitness.cumsum()
     df['cum_perc'] = 100*df.cum_sum/df.Fitness.sum()
@@ -24,14 +13,12 @@ def selection(popRanked: list[tuple[int,float]], eliteSize) ->  list[int]:
     for i in range(0, eliteSize):
         selectionResults.append(popRanked[i][0])
     #we compare a randomly drawn number to these weights to select our mating pool
-    for i in range(0, populationSize - eliteSize):
+    for i in range(0, len(popRanked) - eliteSize):
         pick = 100*random.random()
-        for i in range(0, populationSize):
+        for i in range(0, len(popRanked)):
             if pick <= df.iat[i,3]:
                 selectionResults.append(popRanked[i][0])
                 break
-            
-    #convert into simple list of routes  
     return selectionResults
 
 def selectionWithArchive(popRanked):
@@ -59,9 +46,6 @@ def selectionWithArchive(popRanked):
                 break
     return selectionResults
 
-
-
-
 def determineNonDominatedArchive(currentGen, popRanked):
     archive = []
     for i in range(0, len(popRanked)):
@@ -79,13 +63,13 @@ def determineNonDominatedArchive(currentGen, popRanked):
             newArchive.append(archive[i])
     return newArchive
 
-def determineNonDominatedArchiveSize(popRanked):  
+
+def determineNonDominatedArchiveSize(popRanked):
     archiveSize = 0
     for i in range(0, len(popRanked)):
         if (popRanked[i][1] > 1):
             archiveSize += 1
     return archiveSize
-
 
 def isSameSolution(individuumA, individuumB):
     length = len(individuumA)

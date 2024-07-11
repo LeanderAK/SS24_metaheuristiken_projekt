@@ -136,8 +136,13 @@ def rankRoutes(population, objectiveNrUsed):
         print("Here is something missing")
         
     #print("ranked sorted routes: ", sorted(fitnessResults.items(), key = operator.itemgetter(1), reverse = True))
+    if (objectiveNrUsed == 1):
+        print("before sorting ranked: ", fitnessResults)
+    sorted_values = sorted(fitnessResults.items(), key = operator.itemgetter(1), reverse = True)
+    if (objectiveNrUsed == 1):
+        print("after sorting ranked: ", sorted_values)
     
-    return sorted(fitnessResults.items(), key = operator.itemgetter(1), reverse = True)
+    return sorted_values
 
 #Provide Pareto-Based Fitness Calculation <<<<<<<<<<<<
 # Dictionary bei dem für jedes Individuum die zugehörigen Werte gespeichert werden
@@ -361,7 +366,9 @@ def isSameSolution(individuumA, individuumB):
 
 def nextGeneration(currentGen, eliteSize, mutationRate, objectiveNrUsed, archiveUsed): 
    # rankRoutesBasedOnDominance(currentGen)
+    #print("\n\n pop pre ranked",currentGen)
     popRanked = rankRoutes(currentGen,objectiveNrUsed)
+    #print("\n\n pop ranked",popRanked)
     if (not archiveUsed):
         selectionResults = selection(popRanked, eliteSize)
         
@@ -461,13 +468,13 @@ def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions, population, popSi
         
         #Provide special initial solutions    <<<<<<<<<<<
         #print city Indizes for initial solution
-        bestRouteIndizes = []
+        bestRouteIndices = []
         for city in bestRoute:
-            bestRouteIndizes.append(city.nr)
+            bestRouteIndices.append(city.nr)
     
         print("---- ")
         print("City Numbers of Best Route")
-        print(bestRouteIndizes)
+        print(bestRouteIndices)
         print("---- ")
         plotRoute(bestRoute, "Best final route")
         
