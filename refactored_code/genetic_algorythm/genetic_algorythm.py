@@ -45,9 +45,9 @@ def nextGeneration(currentGen, eliteSize, mutationRate, objectiveNrUsed, archive
     return nextGeneration
 
 
-def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions, population_genes, popSize, eliteSize, mutationRate, generations):
+def geneticAlgorithm(objectiveNrUsed, population_genes, popSize, eliteSize, mutationRate, generations):
     #create initial population
-    population = initialPopulation(popSize, population_genes, specialInitialSolutions)
+    population = initialPopulation(popSize, population_genes)
     
     archiveUsed = False
     
@@ -77,12 +77,14 @@ def geneticAlgorithm(objectiveNrUsed, specialInitialSolutions, population_genes,
     
     #create new generations of populations
     for i in range(0, generations):
-        print(i, end=", ")
+        if(i%10 == 0):
+            print(f'\r... computing - generation: {i + 1}/{generations}', end='')
+        #print(i, end=", ")
         population = nextGeneration(population, eliteSize, mutationRate,objectiveNrUsed,archiveUsed)
         #store infos to plot progress when finished
         progressDistance.append(1 / rankRoutes(population,1)[0][1])
         progressStress.append(1 / rankRoutes(population,2)[0][1])
-    print("Done!")
+    print("\n Done!")
         
     #plot progress - distance
     plt.plot(progressDistance)

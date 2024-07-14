@@ -5,16 +5,22 @@ from .city import City
 
 #Create our initial population
 #Route generator
-def createRoute(cityList):
+def createRoute(cityList)->list[City]:
     route = random.sample(cityList, len(cityList))
+    #for item in route:
+    #    print(f"inside list: type is city? {isinstance(item,City)}")
+    print(f"")
     return route
 
 #Create first "population" (list of routes)
-def initialPopulation(popSize, cityList, specialInitialSolutions):
+def initialPopulation(popSize, cityList) -> list[list[City]]:
     population = []
     
     #TODO: Hinzufügen der speziellen Initiallösungen aus specialInitialSolutions
+    specialInitialSolutions = get_special_initial_solutions(cityList)
     
+    for i in range(len(specialInitialSolutions)):
+        population.append(specialInitialSolutions[i])
 
     numberInitialSolutions = len(specialInitialSolutions)
     print ("Number of special initial solutions:" + str(numberInitialSolutions))
@@ -78,3 +84,4 @@ def get_special_initial_solutions(all_cities:list[City]) -> list[list[City]]:
     
     #return [initial_solution_low_distance, initial_solution_low_stress]
     return [initial_solution_low_distance,initial_solution_low_distance,initial_solution_low_distance,initial_solution_low_distance]
+

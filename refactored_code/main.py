@@ -1,6 +1,7 @@
 
 from genetic_algorythm.fitness import Fitness
 from genetic_algorythm.city import City
+from genetic_algorythm.initial_population import City
 from genetic_algorythm.other_helper_functions import *
 from genetic_algorythm.genetic_algorythm import geneticAlgorithm
 import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
@@ -21,10 +22,10 @@ cityNumbersRoute1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 
 
 route1 = []
 for nr in cityNumbersRoute1:
-    route1.append(getCityBasedOnNr(all_cities,nr))
+    route1.append(getCityBasedOnNr(all_cities,nr)) #to delete? 
     
-#initialSolutionsList = get_special_initial_solutions(all_cities)
-initialSolutionsList:list[Fitness] = []
+#initialSolutionsList:list[list[City]] = get(all_cities)
+#initialSolutionsList:list[Fitness] = []
 #skip for now see, weather it still works
 
 
@@ -36,5 +37,9 @@ initialSolutionsList:list[Fitness] = []
 # bestRoute = geneticAlgorithm(objectiveNrUsed=1, specialInitialSolutions = initialSolutionsList, population_genes=all_cities,
 #                               popSize=5, eliteSize=2, mutationRate=0.01, generations=2)
 
-bestRoute = geneticAlgorithm(objectiveNrUsed=1, specialInitialSolutions = initialSolutionsList, population_genes=all_cities,
-                            popSize=200, eliteSize=20, mutationRate=0.01, generations=500)
+# bestRoute = geneticAlgorithm(objectiveNrUsed=1, population_genes=all_cities,
+#                             popSize=200, eliteSize=20, mutationRate=0.01, generations=500)
+
+
+bestRoute = geneticAlgorithm(objectiveNrUsed=1, population_genes=all_cities,
+                            popSize=100, eliteSize=20, mutationRate=0.01, generations=500)
