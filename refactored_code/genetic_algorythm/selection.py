@@ -37,13 +37,13 @@ def selection(selectionNrUsed, popRanked, eliteSize):
 
     return selectionResults
 
-def selectionWithArchive(selectionNrUsed, popRanked):
+def selectionWithArchive(selectionNrUsed, archiveRanked):
     selectionResults = []
     # Binäre Turnierbasierte selektion (Ohne elitismus)
     if selectionNrUsed == 2:
         tournamentSize = 2
-        tournament_pop = popRanked
-        while len(selectionResults) < len(popRanked):
+        tournament_pop = archiveRanked
+        while len(selectionResults) < len(archiveRanked):
             if len(tournament_pop) < tournamentSize:
                 tournamentSize = len(tournament_pop)
             
@@ -60,16 +60,16 @@ def determineNonDominatedArchive(currentGen, popRanked):
         if (popRanked[i][1] > 1):
             archive.append(currentGen[popRanked[i][0]])
     #-------Prüfung auf Gleichheit bei Bedarf auskommentieren 
-    sameSolutions = []
-    for i in range(0, len(archive)-1):
-        for j in range(i+1, len(archive)):
-            if isSameSolution(archive[i], archive[j]):
-                sameSolutions.append(j)
-    newArchive = []
-    for i in range(0, len(archive)):
-        if (not sameSolutions.__contains__(i)):
-            newArchive.append(archive[i])
-    return newArchive
+    # sameSolutions = []
+    # for i in range(0, len(archive)-1):
+    #     for j in range(i+1, len(archive)):
+    #         if isSameSolution(archive[i], archive[j]):
+    #             sameSolutions.append(j)
+    # newArchive = []
+    # for i in range(0, len(archive)):
+    #     if (not sameSolutions.__contains__(i)):
+    #         newArchive.append(archive[i])
+    return archive
 
 
 def determineNonDominatedArchiveSize(popRanked):

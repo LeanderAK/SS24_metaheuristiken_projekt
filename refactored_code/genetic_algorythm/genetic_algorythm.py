@@ -32,37 +32,41 @@ def nextGeneration(selectionNrUsed, currentGen, eliteSize, mutationRate, objecti
         nextGeneration = mutatePopulation(children, mutationRate,0)
         return nextGeneration, None
     else:
-        # aktuelle generation: P(g)
-        # aktuelles archiv: A(g)
+        # aktuelle generation: P(g) : currentGen
+        # aktuelles archiv: A(g): archive
 
         # Fitnessberechnung aller ergebnisse in P(g) und A(g)
-        currentGenFitness = rankRoutes(currentGen, objectiveNrUsed=3)
-        archiveFitness = rankRoutes(archive, objectiveNrUsed=3)
+        pop_and_arch = currentGen+archive
+        pop_and_arch_fitness = rankRoutes(population=pop_and_arch, objectiveNrUsed=3)
+        # currentGenFitness = rankRoutes(currentGen, objectiveNrUsed=3)
+        # archiveFitness = rankRoutes(archive, objectiveNrUsed=3)
 
         # Kopiere alle nicht dominierten Individuen aus P(g) und A(g) in A(g+1)
-        nonDominatedCurrentGen = determineNonDominatedArchive(currentGen, currentGenFitness)
-        nonDominatedArchive = determineNonDominatedArchive(archive, archiveFitness)
-        nextArchive = nonDominatedCurrentGen + nonDominatedArchive
-
+        nonDiminatedPopAndArch = determineNonDominatedArchive(pop_and_arch, pop_and_arch_fitness)
+        # nonDominatedCurrentGen = determineNonDominatedArchive(currentGen, currentGenFitness)
+        # nonDominatedArchive = determineNonDominatedArchive(archive, archiveFitness)
+        
+        # A(g+1)
+        # nextArchive = nonDominatedCurrentGen + nonDominatedArchive
+        nextArchive = nonDiminatedPopAndArch
         # N = archiveSize
         # |A(g+1)| > N: entferne nicht dominierte Individuen aus A(g+1)
         if len(nextArchive) > archiveSize:
             archiveFitness = rankRoutes(nextArchive, objectiveNrUsed=3)
-            nonDominatedData = determineNonDominatedArchive(nextArchive, archiveFitness)
-            nextArchive = [i for i in nextArchive if i not in nonDominatedData]
+            nonDominatedNextArchive = determineNonDominatedArchive(nextArchive, archiveFitness)
+            nextArchive = [i for i in nextArchive if i not in nonDominatedNextArchive]
 
         # |A(g+1)| < N: Fülle A(g+1) mit dominierten Individuen aus P(g) und A(g) auf
         if len(nextArchive) < archiveSize:
-            dominatedCurrentGen = [i for i in currentGen if i not in nonDominatedCurrentGen]
-            dominatedArchive = [i for i in archive if i not in nonDominatedArchive]
-            nextArchive += dominatedCurrentGen + dominatedArchive
+            dominatedPopAndArch = [i for i in pop_and_arch if i not in nonDiminatedPopAndArch]
+            nextArchive += dominatedPopAndArch
 
         # Turnierselektion von A(g+1)
         nextArchiveFitness = rankRoutes(nextArchive, objectiveNrUsed=3)
-        selectionResults = selectionWithArchive(selectionNrUsed, nextArchiveFitness)
+        selectionResults = selectionWithArchive(selectionNrUsed=selectionNrUsed, archiveRanked=nextArchiveFitness)
 
 
-        matingpool = matingPool(currentGen, selectionResults)
+        matingpool = matingPool(pop_and_arch, selectionResults)
         # Neue Population P(g+1)
         archiveSize = determineNonDominatedArchiveSize(popRanked)
         children = breedPopulation(matingpool, archiveSize)
