@@ -41,5 +41,5 @@ for nr in cityNumbersRoute1:
 #                             popSize=200, eliteSize=20, mutationRate=0.01, generations=500)
 
 
-bestRoute = geneticAlgorithm(objectiveNrUsed=1, population_genes=all_cities,
+bestRoute = geneticAlgorithm(objectiveNrUsed=1, initialPopNrUsed=3, population_genes=all_cities,
                             popSize=100, eliteSize=20, mutationRate=0.01, generations=500)
