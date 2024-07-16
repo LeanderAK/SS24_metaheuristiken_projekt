@@ -1,49 +1,57 @@
 import numpy as np, random, operator, pandas as pd
 
 #Create a selection function that will be used to make the list of parent routes
-def selection(popRanked, eliteSize):
+def selection(selectionNrUsed, popRanked, eliteSize):
     selectionResults = []
-    #TODO: Z.B. Turnierbasierte Selektion statt fitnessproportionaler Selektion
-    # roulette wheel by calculating a relative fitness weight for each individual
-    df = pd.DataFrame(np.array(popRanked), columns=["Index","Fitness"])
-    df['cum_sum'] = df.Fitness.cumsum()
-    df['cum_perc'] = 100*df.cum_sum/df.Fitness.sum()
     
-    #We’ll also want to hold on to our best routes, so we introduce elitism
+    #Elitism
     for i in range(0, eliteSize):
         selectionResults.append(popRanked[i][0])
-    #we compare a randomly drawn number to these weights to select our mating pool
-    for i in range(0, len(popRanked) - eliteSize):
-        pick = 100*random.random()
-        for i in range(0, len(popRanked)):
-            if pick <= df.iat[i,3]:
-                selectionResults.append(popRanked[i][0])
-                break
+
+    #Turnierbasierte Selektion
+    if selectionNrUsed == 2:
+        tournamentSize = 2
+        tournament_pop = popRanked[eliteSize:]
+        while len(selectionResults) < len(popRanked):
+            if len(tournament_pop) < tournamentSize:
+                tournamentSize = len(tournament_pop)
+            
+            tournament = random.sample(tournament_pop, tournamentSize)
+            tournament = sorted(tournament, key=lambda x: x[1], reverse=True)
+            selectionResults.append(tournament[0][0])
+            tournament_pop.remove(tournament[0])
+
+    elif selectionNrUsed == 1:
+        # Fitnessproportionale skala
+        # roulette wheel by calculating a relative fitness weight for each individual
+        df = pd.DataFrame(np.array(popRanked), columns=["Index","Fitness"])
+        df['cum_sum'] = df.Fitness.cumsum()
+        df['cum_perc'] = 100*df.cum_sum/df.Fitness.sum()
+        #we compare a randomly drawn number to these weights to select our mating pool
+        for i in range(0, len(popRanked) - eliteSize):
+            pick = 100*random.random()
+            for i in range(0, len(popRanked)):
+                if pick <= df.iat[i,3]:
+                    selectionResults.append(popRanked[i][0])
+                    break
+
     return selectionResults
 
-def selectionWithArchive(popRanked):
+def selectionWithArchive(selectionNrUsed, popRanked):
     selectionResults = []
-    #TODO: Z.B. Turnierbasierte Selektion statt fitnessproportionaler Selektion
-    # roulette wheel by calculating a relative fitness weight for each individual
-    df = pd.DataFrame(np.array(popRanked), columns=["Index","Fitness"])
-    df['cum_sum'] = df.Fitness.cumsum()
-    df['cum_perc'] = 100*df.cum_sum/df.Fitness.sum()
-    
-    #We’ll also want to hold on to our best routes, so we introduce elitism
-    #here wie hold all non-dominated solutions
-    #TODO: ein festes Archiv vorsehen wie es im ursprünglichen SPEA2 vorgesehen ist 
-    for i in range(0, len(popRanked)):
-        if (popRanked[i][1] > 1):
-            selectionResults.append(popRanked[i][0])
-    currentArchiveSize = len(selectionResults)
+    # Binäre Turnierbasierte selektion (Ohne elitismus)
+    if selectionNrUsed == 2:
+        tournamentSize = 2
+        tournament_pop = popRanked
+        while len(selectionResults) < len(popRanked):
+            if len(tournament_pop) < tournamentSize:
+                tournamentSize = len(tournament_pop)
+            
+            tournament = random.sample(tournament_pop, tournamentSize)
+            tournament = sorted(tournament, key=lambda x: x[1], reverse=True)
+            selectionResults.append(tournament[0][0])
+            tournament_pop.remove(tournament[0])
 
-    #we compare a randomly drawn number to these weights to select our mating pool
-    for i in range(0, len(popRanked) - currentArchiveSize):
-        pick = 100*random.random()
-        for i in range(0, len(popRanked)):
-            if pick <= df.iat[i,3]:
-                selectionResults.append(popRanked[i][0])
-                break
     return selectionResults
 
 def determineNonDominatedArchive(currentGen, popRanked):

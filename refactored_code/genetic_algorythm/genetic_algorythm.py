@@ -17,35 +17,62 @@ import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
 #Finally, we then create our new generation using the breedPopulation function 
 # and then applying mutation using the mutatePopulation function. 
 
-def nextGeneration(currentGen, eliteSize, mutationRate, objectiveNrUsed, archiveUsed) -> list[list[City]]: 
+def nextGeneration(selectionNrUsed, currentGen, eliteSize, mutationRate, objectiveNrUsed, archiveUsed, archiveSize = None, archive=None) -> list[list[City]]: 
    # rankRoutesBasedOnDominance(currentGen)
     #print("\n\n pop pre ranked",currentGen)
     popRanked = rankRoutes(currentGen,objectiveNrUsed)
     #print("\n\n pop ranked",popRanked)
     if (not archiveUsed):
-        selectionResults = selection(popRanked, eliteSize)
+        selectionResults = selection(selectionNrUsed, popRanked, eliteSize)
         
         matingpool = matingPool(currentGen, selectionResults)
         #print("\n\n next selectionResults",matingpool)
         children = breedPopulation(matingpool, eliteSize)
         #print("\n\n next children",children)
         nextGeneration = mutatePopulation(children, mutationRate,0)
+        return nextGeneration, None
     else:
-        #<<<<< use archiv
-        #TODO: ein festes Archiv vorsehen wie es im ursprünglichen SPEA2 vorgesehen ist 
-        selectionResults = selectionWithArchive(popRanked)
+        # aktuelle generation: P(g)
+        # aktuelles archiv: A(g)
+
+        # Fitnessberechnung aller ergebnisse in P(g) und A(g)
+        currentGenFitness = rankRoutes(currentGen, objectiveNrUsed=3)
+        archiveFitness = rankRoutes(archive, objectiveNrUsed=3)
+
+        # Kopiere alle nicht dominierten Individuen aus P(g) und A(g) in A(g+1)
+        nonDominatedCurrentGen = determineNonDominatedArchive(currentGen, currentGenFitness)
+        nonDominatedArchive = determineNonDominatedArchive(archive, archiveFitness)
+        nextArchive = nonDominatedCurrentGen + nonDominatedArchive
+
+        # N = archiveSize
+        # |A(g+1)| > N: entferne nicht dominierte Individuen aus A(g+1)
+        if len(nextArchive) > archiveSize:
+            archiveFitness = rankRoutes(nextArchive, objectiveNrUsed=3)
+            nonDominatedData = determineNonDominatedArchive(nextArchive, archiveFitness)
+            nextArchive = [i for i in nextArchive if i not in nonDominatedData]
+
+        # |A(g+1)| < N: Fülle A(g+1) mit dominierten Individuen aus P(g) und A(g) auf
+        if len(nextArchive) < archiveSize:
+            dominatedCurrentGen = [i for i in currentGen if i not in nonDominatedCurrentGen]
+            dominatedArchive = [i for i in archive if i not in nonDominatedArchive]
+            nextArchive += dominatedCurrentGen + dominatedArchive
+
+        # Turnierselektion von A(g+1)
+        nextArchiveFitness = rankRoutes(nextArchive, objectiveNrUsed=3)
+        selectionResults = selectionWithArchive(selectionNrUsed, nextArchiveFitness)
+
+
         matingpool = matingPool(currentGen, selectionResults)
+        # Neue Population P(g+1)
         archiveSize = determineNonDominatedArchiveSize(popRanked)
         children = breedPopulation(matingpool, archiveSize)
-        
-        
         #eliteSize is used to maintain solutions that should be in an archive
         nextGeneration = mutatePopulation(children, mutationRate, eliteSize)
-    
-    return nextGeneration
+
+        return nextGeneration, nextArchive
 
 
-def geneticAlgorithm(objectiveNrUsed, population_genes, popSize, eliteSize, mutationRate, generations):
+def geneticAlgorithm(objectiveNrUsed, selectionNrUsed, population_genes, popSize, eliteSize, mutationRate, generations, archiveSize = None):
     #create initial population
     population = initialPopulation(popSize, population_genes)
     
@@ -74,18 +101,25 @@ def geneticAlgorithm(objectiveNrUsed, population_genes, popSize, eliteSize, muta
     progressStress = []
     progressStress.append(1 / rankRoutes(population,2)[0][1])
     
-    
-    #create new generations of populations
-    for i in range(0, generations):
-        if(i%10 == 0):
-            print(f'\r... computing - generation: {i + 1}/{generations}', end='')
-        #print(i, end=", ")
-        population = nextGeneration(population, eliteSize, mutationRate,objectiveNrUsed,archiveUsed)
-        #store infos to plot progress when finished
-        progressDistance.append(1 / rankRoutes(population,1)[0][1])
-        progressStress.append(1 / rankRoutes(population,2)[0][1])
-    print("\n Done!")
         
+    if archiveUsed == True:
+        archive = []
+        for i in range(0, generations):
+            if(i%10 == 0):
+                print(f'\r... computing - generation: {i + 1}/{generations}', end='')
+            population, archive = nextGeneration(selectionNrUsed, population, eliteSize, mutationRate,objectiveNrUsed,archiveUsed, archiveSize, archive)
+            #store infos to plot progress when finished
+            progressDistance.append(1 / rankRoutes(population,1)[0][1])
+            progressStress.append(1 / rankRoutes(population,2)[0][1])
+    else:
+        for i in range(0, generations):
+            if(i%10 == 0):
+                print(f'\r... computing - generation: {i + 1}/{generations}', end='')
+            population, archive = nextGeneration(selectionNrUsed, population, eliteSize, mutationRate,objectiveNrUsed,archiveUsed, archiveSize)
+            #store infos to plot progress when finished
+            progressDistance.append(1 / rankRoutes(population,1)[0][1])
+            progressStress.append(1 / rankRoutes(population,2)[0][1])
+    print("\n Done!")
     #plot progress - distance
     plt.plot(progressDistance)
     plt.ylabel('Distance')
