@@ -36,11 +36,12 @@ for nr in cityNumbersRoute1:
 
 #modify selectionNrUsed to use different selection methods:
 # 1 = Fitnessproportional, 2 = Turnament based
+
 # bestRoute = geneticAlgorithm(objectiveNrUsed=1, specialInitialSolutions = initialSolutionsList, population_genes=all_cities,
 #                               popSize=5, eliteSize=2, mutationRate=0.01, generations=2)
 
 # bestRoute = geneticAlgorithm(objectiveNrUsed=1, population_genes=all_cities,
 #                             popSize=200, eliteSize=20, mutationRate=0.01, generations=500)
 
-bestRoute = geneticAlgorithm(objectiveNrUsed=1, selectionNrUsed=2, population_genes=all_cities,
+bestRoute = geneticAlgorithm(objectiveNrUsed=3, selectionNrUsed=2, population_genes=all_cities,
                             popSize=100, eliteSize=20, mutationRate=0.01, generations=500, archiveSize=25)
