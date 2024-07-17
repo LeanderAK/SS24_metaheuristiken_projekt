@@ -26,8 +26,7 @@ def rankRoutes(population, objectiveNrUsed) -> list[tuple[int,float]]:
         for i in range(0,len(population)):
             fitnessResults[i] = Fitness(population[i]).routeFitnessStressBased()
     elif (objectiveNrUsed == 3):
-        #TODO: passender Aufruf der bestehenden Fitnessberechnung 
-        print("Here is something missing")
+        fitnessResults = rankRoutesBasedOnDominance(population)
         
     #print("ranked sorted routes: ", sorted(fitnessResults.items(), key = operator.itemgetter(1), reverse = True))
    ## if (objectiveNrUsed == 1):
