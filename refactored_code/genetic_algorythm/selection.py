@@ -1,14 +1,16 @@
 import numpy as np, random, operator, pandas as pd
 
 #Create a selection function that will be used to make the list of parent routes
-def selection(selectionNrUsed:int, popRanked: list[tuple[int,float]], eliteSize) -> list[int]:
+def select_mating_candidates_and_elites(selectionNrUsed:int, popRanked: list[tuple[int,float]], eliteSize) -> tuple[list[int],list[int]]: 
     """
     selectionNrUsed: 
         1: fitnessproportional solution
         2: tournament-based selection
         3: roulete-wheel selection
     
-    Return a list of the selected route indexes
+    Return a 
+    [0] list of the route indexes selected for mating
+    [1] list of route indexes selected for the elites
     
     popRanked should be a list[tuple[int,float]]  
         [0] left int:  the population index of the actual Route
@@ -16,10 +18,12 @@ def selection(selectionNrUsed:int, popRanked: list[tuple[int,float]], eliteSize)
     """
     
     selectionResults = []
+    elites = []
     
      #Elitism
+     #TODO this is not the right way to do elitism, elitism means the elite individuals will reach the next generation unchanged and are not part of the mating pool
     for i in range(0, eliteSize):
-        selectionResults.append(popRanked[i][0])
+        elites.append(popRanked[i][0])
     
     if selectionNrUsed == 1: # fitness proportional
         df = pd.DataFrame(np.array(popRanked), columns=["Index","Fitness"])
@@ -38,6 +42,7 @@ def selection(selectionNrUsed:int, popRanked: list[tuple[int,float]], eliteSize)
         tournamentSize = 2
         tournament_pop = popRanked[eliteSize:]
         while len(selectionResults) < len(popRanked):
+        #while len(tournament_pop) >= 2:
             if len(tournament_pop) < tournamentSize:
                 tournamentSize = len(tournament_pop)
             
@@ -45,13 +50,15 @@ def selection(selectionNrUsed:int, popRanked: list[tuple[int,float]], eliteSize)
             tournament = sorted(tournament, key=lambda x: x[1], reverse=True)
             selectionResults.append(tournament[0][0])
             tournament_pop.remove(tournament[0])
+            #tournament_pop.remove(tournament[1])
         
     elif selectionNrUsed == 3: #TODO: # roulette wheel by calculating a relative fitness weight for each individual
         selectionResults = []
         #TODO
     
+    print("selection results length: ", len(selectionResults))
 
-    return selectionResults
+    return selectionResults,elites
 
 
 # why do we repeat almost the same code in this method? 

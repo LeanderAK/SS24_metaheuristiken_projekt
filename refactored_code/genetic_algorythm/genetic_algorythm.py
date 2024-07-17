@@ -23,20 +23,21 @@ def nextGeneration(objectiveNrUsed, selectionNrUsed, currentGen, eliteSize, muta
     popRanked = rankRoutes(currentGen,objectiveNrUsed)
     #print("\n\n pop ranked",popRanked)
     if (not archiveUsed):
-        selectionResults = selection(selectionNrUsed, popRanked, eliteSize)
+        mating_condidates_indices, elites_indices = select_mating_candidates_and_elites(selectionNrUsed, popRanked, eliteSize)
         
-        matingpool = matingPool(currentGen, selectionResults)
+        matingpool = get_individuals_by_indices(currentGen, mating_condidates_indices)
+        elites = get_individuals_by_indices(currentGen, elites_indices)
         #print("\n\n next selectionResults",matingpool)
-        children = breedPopulation(matingpool, eliteSize)
+        children = breedPopulation(matingpool)
         #print("\n\n next children",children)
-        nextGeneration = mutatePopulation(children, mutationRate,0)
+        nextGeneration = elites + mutatePopulation(children, mutationRate,0) 
     else:
         #<<<<< use archiv
         #TODO: ein festes Archiv vorsehen wie es im ursprünglichen SPEA2 vorgesehen ist 
-        selectionResults = selectionWithArchive(popRanked)
-        matingpool = matingPool(currentGen, selectionResults)
+        mating_condidates_indices = selectionWithArchive(popRanked)
+        matingpool = get_individuals_by_indices(currentGen, mating_condidates_indices)
         archiveSize = determineNonDominatedArchiveSize(popRanked)
-        children = breedPopulation(matingpool, archiveSize)
+        children = breedPopulation(matingpool)
         
         
         #eliteSize is used to maintain solutions that should be in an archive

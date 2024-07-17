@@ -2,12 +2,12 @@ import random
 from .fitness import Fitness
 
 #Create mating pool
-def matingPool(population, selectionResults):
-    matingpool = []
+def get_individuals_by_indices(population, selectionResults):
+    pool = []
     for i in range(0, len(selectionResults)):
         index = selectionResults[i]
-        matingpool.append(population[index])
-    return matingpool
+        pool.append(population[index])
+    return pool
 
 # Create a crossover function for two parents to create one child
 def breed(parent1, parent2):
@@ -35,17 +35,12 @@ def breed(parent1, parent2):
 
 
 #Create function to run crossover over full mating pool
-def breedPopulation(matingpool, eliteSize):
+def breedPopulation(matingpool):
     children = []
-    length = len(matingpool) - eliteSize
     pool = random.sample(matingpool, len(matingpool))
 
-    #we use elitism to retain the best routes from the current population.
-    for i in range(0,eliteSize):
-        children.append(matingpool[i])
-
     #we use the breed function to fill out the rest of the next generation.    
-    for i in range(0, length):
+    for i in range(0, len(matingpool)):
         child = breed(pool[i], pool[len(matingpool)-i-1])
         children.append(child)
     return children
