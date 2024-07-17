@@ -17,7 +17,7 @@ import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
 #Finally, we then create our new generation using the breedPopulation function 
 # and then applying mutation using the mutatePopulation function. 
 
-def nextGeneration(objectiveNrUsed, selectionNrUsed, currentGen, eliteSize, breeding_rate, mutationRate, archiveUsed) -> list[list[City]]: 
+def nextGeneration(objectiveNrUsed, selectionNrUsed, currentGen, eliteSize, breeding_rate, mutationRate, archiveUsed) -> list[list[City]]:       
    # rankRoutesBasedOnDominance(currentGen)
     #print("\n\n pop pre ranked",currentGen)
     popRanked = rankRoutes(currentGen,objectiveNrUsed)
@@ -48,6 +48,10 @@ def nextGeneration(objectiveNrUsed, selectionNrUsed, currentGen, eliteSize, bree
 
 
 def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, population_genes, popSize, eliteSize, breeding_rate, mutationRate, generations):
+    assert (eliteSize < (popSize*0.5)), "keep the elite size under 50% of the total population"
+    assert (breeding_rate > 0.001 and breeding_rate < 0.51), "keep the breeding rate between 0.01 and 0.5"
+
+    
     #create initial population
     population = initialPopulation(initialPopNrUsed, popSize, population_genes)
     

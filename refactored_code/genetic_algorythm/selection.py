@@ -53,6 +53,9 @@ def select_mating_candidates_and_elites(selectionNrUsed:int, popRanked: list[tup
     
     # Turnierbasierte Selektion statt fitnessproportionaler Selektion          
     elif selectionNrUsed == 2: 
+        assert((len(popRanked)*breeding_rate) < (len(popRanked)-eliteSize)*0.5), "not enough population remaining after elites were taken away to do a tournament, think about either increasing the population or decreasing the elite size or decrease the breeding rate"
+
+        
         tournamentSize = 2
         tournament_pop = popRanked[eliteSize:]
         
