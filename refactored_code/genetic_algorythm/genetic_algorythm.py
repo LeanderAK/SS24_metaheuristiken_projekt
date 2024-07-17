@@ -45,9 +45,9 @@ def nextGeneration(currentGen, eliteSize, mutationRate, objectiveNrUsed, archive
     return nextGeneration
 
 
-def geneticAlgorithm(objectiveNrUsed, population_genes, popSize, eliteSize, mutationRate, generations):
+def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, population_genes, popSize, eliteSize, mutationRate, generations):
     #create initial population
-    population = initialPopulation(popSize, population_genes)
+    population = initialPopulation(initialPopNrUsed, popSize, population_genes)
     
     archiveUsed = False
     
