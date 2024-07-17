@@ -90,6 +90,3 @@ best_score, best_popSize, best_eliteSize, best_breeding_rate, best_mutationRate,
 
 print(f'Best Fitness Score: {best_score}')
 print(f'Best Parameters - popSize: {best_popSize}, eliteSize: {best_eliteSize}, breedingRate: {best_breeding_rate} mutationRate: {best_mutationRate}, generations: {best_generations}, archiveSize: {best_archiveSize}')
-
-    
-
