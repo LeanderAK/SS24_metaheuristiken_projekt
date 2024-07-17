@@ -1,7 +1,9 @@
 import numpy as np, random, operator, pandas as pd
 
 #Create a selection function that will be used to make the list of parent routes
-def select_mating_candidates_and_elites(selectionNrUsed:int, popRanked: list[tuple[int,float]], eliteSize, breeding_rate:float) -> tuple[list[int],list[int]]: 
+def select_mating_candidates_and_elites(
+        selectionNrUsed:int, popRanked: list[tuple[int,float]],
+        eliteSize, breeding_rate:float) -> tuple[list[int],list[int]]: 
     """
     Params: 
         selectionNrUsed: 
@@ -56,7 +58,7 @@ def select_mating_candidates_and_elites(selectionNrUsed:int, popRanked: list[tup
         tournamentSize = 2
         tournament_pop = popRanked[eliteSize:]
         
-        while len(selectionResults) < mating_pool_size:     
+        while len(selectionResults) < mating_pool_size and len(tournament_pop) > 1:     
             tournament = random.sample(tournament_pop, tournamentSize)
             tournament = sorted(tournament, key=lambda x: x[1], reverse=True)
             selectionResults.append(tournament[0][0])
@@ -134,3 +136,19 @@ def isSameSolution(individuumA, individuumB):
             break
         i+=1
     return isSameSolution
+
+def createNextArchive(population, rankedPopulation, archiveSize):
+    nonDiminatedCurrentGenAndArchive = determineNonDominatedArchive(population, rankedPopulation)
+    nextArchive = nonDiminatedCurrentGenAndArchive
+
+    if len(nextArchive) > archiveSize:
+        # TODO remove worst first
+        nextArchive = nextArchive[:archiveSize]
+
+    # else if |A(g+1)| < N: Fülle A(g+1) mit dominierten Individuen aus P(g) und A(g) auf
+    elif len(nextArchive) < archiveSize:
+        # TODO add best first
+        dominatedPopAndArch = [i for i in population if i not in nonDiminatedCurrentGenAndArchive]
+        nextArchive += dominatedPopAndArch[:archiveSize-len(nextArchive)]
+
+    return nextArchive
