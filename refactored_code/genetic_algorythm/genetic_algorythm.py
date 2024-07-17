@@ -71,7 +71,7 @@ def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, populat
         bestRoute = population[bestRouteIndex]
         print("Initial distance : " + str(Fitness(bestRoute).routeDistance()))
         print("Initial stress:    " + str(Fitness(bestRoute).routeStress()))
-        plotRoute(bestRoute, "Best initial route")
+        #plotRoute(bestRoute, "Best initial route")
     elif(objectiveNrUsed == 3):
         print("Initial highest fitness value: " + str(rankRoutes(population,objectiveNrUsed)[0][1]))
         print("Initial best distance value: " + str(1/ rankRoutes(population,1)[0][1]))
@@ -79,7 +79,7 @@ def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, populat
         #archiveUsed = True
     
     #plot intial population with regard to the two objectives
-    plotPopulationAndObjectiveValues(population, "Initial Population")
+    # plotPopulationAndObjectiveValues(population, "Initial Population")
     
     #store infos to plot progress when finished
     progressDistance = []
@@ -112,17 +112,17 @@ def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, populat
     print("\n Done!")
         
     #plot progress - distance
-    plt.plot(progressDistance)
-    plt.ylabel('Distance')
-    plt.xlabel('Generation')
-    plt.title('Progress of Distance Minimization')
-    plt.show()
+    # plt.plot(progressDistance)
+    # plt.ylabel('Distance')
+    # plt.xlabel('Generation')
+    # plt.title('Progress of Distance Minimization')
+    # plt.show()
     #plot progress - stress
-    plt.plot(progressStress)
-    plt.ylabel('Stress')
-    plt.xlabel('Generation')
-    plt.title('Progress of Stress Minimization')
-    plt.show()
+    # plt.plot(progressStress)
+    # plt.ylabel('Stress')
+    # plt.xlabel('Generation')
+    # plt.title('Progress of Stress Minimization')
+    # plt.show()
     
     #provide statistics about best final solution with regard to chosen objective
     if (objectiveNrUsed == 1 or objectiveNrUsed == 2):
@@ -149,14 +149,15 @@ def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, populat
         print("Final best distance value: " + str(1/ rankRoutes(population,1)[0][1]))
         print("Final best stress value: " + str(1/ rankRoutes(population,2)[0][1]))
         bestRouteIndex = rankRoutes(population,objectiveNrUsed)[0][0]
+        bestRouteFitness = rankRoutes(population,objectiveNrUsed)[0][1]
         bestRoute = population[bestRouteIndex]
         #TODO: ein festes Archiv vorsehen wie es im ursprünglichen SPEA2 vorgesehen ist
         # dann alle Lösungen ausgeben die im Archiv sind
         
-        
+        return bestRoute, bestRouteFitness
     #plot final population with regard to the two objectives
     plotPopulationAndObjectiveValues(population, "Final Population",archive)
     
 
     
-    return bestRoute
+    return bestRoute, None

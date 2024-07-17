@@ -41,5 +41,52 @@ for nr in cityNumbersRoute1:
 #                             popSize=200, eliteSize=20, mutationRate=0.01, generations=500)
 
 
-bestRoute = geneticAlgorithm(objectiveNrUsed=3, initialPopNrUsed=1, selectionNrUsed=2, population_genes=all_cities,
-                            popSize=200, eliteSize=10, breeding_rate=0.3, mutationRate=0.001, generations=100, archiveUsed=True, archiveSize=20)
+def evaluate_ga_parameters(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, population_genes,
+                                popSize, eliteSize, breeding_rate, mutationRate, generations, archiveSize):
+    
+    bestRoute, bestRouteFitness = geneticAlgorithm(objectiveNrUsed=objectiveNrUsed, initialPopNrUsed=initialPopNrUsed, selectionNrUsed=selectionNrUsed, population_genes=population_genes,
+                                popSize=popSize, eliteSize=eliteSize, breeding_rate=breeding_rate, mutationRate=mutationRate, generations=generations, archiveSize=archiveSize)
+    
+    return bestRouteFitness
+
+param_space = {
+    'popSize': [100,200],
+    'eliteSize': [10, 20],
+    'breeding_rate': [0.1, 0.3],
+    'mutationRate': [0.002, 0.001, 0.0005],
+    'generations': [400, 500],
+    'archiveSize': [10, 20]
+}
+
+# List to store results
+results = []
+
+n_samples = 20
+for _ in range(n_samples):
+    popSize = random.choice(param_space['popSize'])
+    eliteSize = random.choice(param_space['eliteSize'])
+    breeding_rate = random.choice(param_space['breeding_rate'])
+    mutationRate = random.choice(param_space['mutationRate'])
+    generations = random.choice(param_space['generations'])
+    archiveSize = random.choice(param_space['archiveSize'])
+    
+    score = evaluate_ga_parameters(
+        objectiveNrUsed = 3, 
+        initialPopNrUsed = 1, 
+        selectionNrUsed = 2, 
+        population_genes = all_cities,
+        popSize = popSize,
+        eliteSize = eliteSize, 
+        breeding_rate = breeding_rate, 
+        mutationRate = mutationRate, 
+        generations = generations, 
+        archiveSize = archiveSize
+    )
+    results.append((score, popSize, eliteSize, breeding_rate, mutationRate, generations, archiveSize))
+
+# Find the best parameters
+best_result = min(results, key=lambda x: x[0])
+best_score, best_popSize, best_eliteSize, best_breeding_rate, best_mutationRate, best_generations, best_archiveSize = best_result
+
+print(f'Best Fitness Score: {best_score}')
+print(f'Best Parameters - popSize: {best_popSize}, eliteSize: {best_eliteSize}, breedingRate: {best_breeding_rate} mutationRate: {best_mutationRate}, generations: {best_generations}, archiveSize: {best_archiveSize}')
