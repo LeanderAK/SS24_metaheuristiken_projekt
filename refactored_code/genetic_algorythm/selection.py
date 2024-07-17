@@ -55,16 +55,13 @@ def select_mating_candidates_and_elites(selectionNrUsed:int, popRanked: list[tup
     elif selectionNrUsed == 2: 
         tournamentSize = 2
         tournament_pop = popRanked[eliteSize:]
-        while len(selectionResults) < len(popRanked):
-        #while len(tournament_pop) >= 2:
-            if len(tournament_pop) < tournamentSize:
-                tournamentSize = len(tournament_pop)
-            
+        
+        while len(selectionResults) < mating_pool_size:     
             tournament = random.sample(tournament_pop, tournamentSize)
             tournament = sorted(tournament, key=lambda x: x[1], reverse=True)
             selectionResults.append(tournament[0][0])
             tournament_pop.remove(tournament[0])
-            #tournament_pop.remove(tournament[1])
+            tournament_pop.remove(tournament[1])
     
     #TODO: # roulette wheel by calculating a relative fitness weight for each individual    
     elif selectionNrUsed == 3: 
