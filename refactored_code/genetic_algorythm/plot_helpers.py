@@ -3,13 +3,22 @@ from matplotlib import pyplot as plt
 from .fitness import Fitness
 
 
-def plotPopulationAndObjectiveValues(population,title):
+def plotPopulationAndObjectiveValues(population,title, special_colored_population = None):
     distance = []
     stress = []
     for route in population:
         distance.append(Fitness(route).routeDistance())
         stress.append(Fitness(route).routeStress())
     plt.scatter(distance,stress,marker = "o",color="black")
+    
+    if(special_colored_population is not None):
+        special_distance = []
+        special_stress = []
+        for route in special_colored_population:
+            special_distance.append(Fitness(route).routeDistance())
+            special_stress.append(Fitness(route).routeStress())
+        plt.scatter(special_distance,special_stress,marker = "o",color="red")
+
     plt.ylabel('Stress')
     plt.xlabel('Distance')
     plt.title(title)

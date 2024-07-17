@@ -54,7 +54,7 @@ def nextGeneration(objectiveNrUsed, selectionNrUsed, currentGen, eliteSize, bree
     
 
 
-def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, population_genes, popSize, eliteSize, breeding_rate, mutationRate, generations, archiveSize=20):
+def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, population_genes, popSize, eliteSize, breeding_rate, mutationRate, generations, archiveUsed=False, archiveSize=20):
     assert (eliteSize < (popSize*0.5)), "keep the elite size under 50% of the total population"
     assert (breeding_rate > 0.001 and breeding_rate < 0.51), "keep the breeding rate between 0.01 and 0.5"
 
@@ -62,7 +62,7 @@ def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, populat
     #create initial population
     population = initialPopulation(initialPopNrUsed, popSize, population_genes)
     
-    archiveUsed = False
+    #archiveUsed = False
     
     #provide statistics about best initial solution with regard to chosen objective
     if (objectiveNrUsed == 1 or objectiveNrUsed == 2):
@@ -76,7 +76,7 @@ def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, populat
         print("Initial highest fitness value: " + str(rankRoutes(population,objectiveNrUsed)[0][1]))
         print("Initial best distance value: " + str(1/ rankRoutes(population,1)[0][1]))
         print("Initial best stress value: " + str(1/ rankRoutes(population,2)[0][1]))
-        archiveUsed = True
+        #archiveUsed = True
     
     #plot intial population with regard to the two objectives
     plotPopulationAndObjectiveValues(population, "Initial Population")
@@ -155,7 +155,7 @@ def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, populat
         
         
     #plot final population with regard to the two objectives
-    plotPopulationAndObjectiveValues(population, "Final Population")
+    plotPopulationAndObjectiveValues(population, "Final Population",archive)
     
 
     
