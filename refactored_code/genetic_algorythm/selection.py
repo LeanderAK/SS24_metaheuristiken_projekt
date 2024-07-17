@@ -1,9 +1,9 @@
 import numpy as np, random, operator, pandas as pd
 
 #Create a selection function that will be used to make the list of parent routes
-def select_mating_candidates_and_elites(
+def select_mating_candidates(
         selectionNrUsed:int, popRanked: list[tuple[int,float]],
-        eliteSize, breeding_rate:float) -> tuple[list[int],list[int]]: 
+        eliteSize, breeding_rate:float) -> list[int]: 
     """
     Params: 
         selectionNrUsed: 
@@ -20,20 +20,13 @@ def select_mating_candidates_and_elites(
             thats the percentage of the population selected for mating
     
     Returns 
-        a touple
-        [0] list of the route indexes selected for mating
-        [1] list of route indexes selected for the elites
+        list of the route indexes selected for mating
     
     
     """
     
     selectionResults = []
-    elites = []
-    
-    # Seperate Elites
-    for i in range(0, eliteSize):
-        elites.append(popRanked[i][0])
-        
+     
     mating_pool_size = int(len(popRanked) * breeding_rate)
     #print("mating pool size: " ,mating_pool_size)
     
@@ -59,7 +52,7 @@ def select_mating_candidates_and_elites(
 
         
         tournamentSize = 2
-        tournament_pop = popRanked[eliteSize:]
+        tournament_pop = popRanked.copy()
         
         while len(selectionResults) < mating_pool_size and len(tournament_pop) > 1:     
             tournament = random.sample(tournament_pop, tournamentSize)
@@ -75,7 +68,18 @@ def select_mating_candidates_and_elites(
     
     #print("selection results length: ", len(selectionResults))
 
-    return selectionResults,elites
+    return selectionResults
+
+
+def get_elites_indices(popRanked: list[tuple[int,float]],eliteSize) -> list[int]:
+    elites_indices = []
+    
+    # Seperate Elites
+    for i in range(0, eliteSize):
+        elites_indices.append(popRanked[i][0])
+        
+    return elites_indices
+
 
 
 # why do we repeat almost the same code in this method? 

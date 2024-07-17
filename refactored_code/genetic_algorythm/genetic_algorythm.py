@@ -17,37 +17,51 @@ import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
 #Finally, we then create our new generation using the breedPopulation function 
 # and then applying mutation using the mutatePopulation function. 
 
-def nextGeneration(objectiveNrUsed, selectionNrUsed, currentGen, eliteSize, breeding_rate, mutationRate, archiveUsed, archive = None, archiveSize= None) -> list[list[City]]: 
+def nextGeneration(objectiveNrUsed, selectionNrUsed, currentGen, eliteSize, breeding_rate, mutationRate, archiveUsed, archive = None, archiveSize= None) -> tuple[list[list[City]],list[list[City]]]: 
+    """
+    return a touple of 
+    [0] next generation
+    [1] next archive
+    """
    # rankRoutesBasedOnDominance(currentGen)
     #print("\n\n pop pre ranked",currentGen)
     #print("\n\n pop ranked",popRanked)
     if (not archiveUsed):
-        popRanked = rankRoutes(currentGen,objectiveNrUsed)
-        mating_condidates_indices, elites_indices = select_mating_candidates_and_elites(selectionNrUsed, popRanked, eliteSize, breeding_rate)
+        popRanked:list[tuple[int,float]] = rankRoutes(currentGen,objectiveNrUsed)
+        #print("pop ranked first", Fitness(getCityBasedOnNr(currentGen,popRanked[0][0])).routeDistance())
+        mating_condidates_indices:list[int] = select_mating_candidates(selectionNrUsed, popRanked, eliteSize, breeding_rate)
+        elites_indices:list[int] = get_elites_indices(popRanked=popRanked,eliteSize=eliteSize)
         
         matingpool:list[list[City]] = get_individuals_by_indices(currentGen, mating_condidates_indices)
         elites:list[list[City]] = get_individuals_by_indices(currentGen, elites_indices)
+        
         #print("\n\n next selectionResults",matingpool)
         children:list[list[City]] = breedPopulation(matingpool, len(currentGen)-eliteSize)
         #print("\n\n next children",children)
-        nextGeneration:list[list[City]] = elites + mutatePopulation(children, mutationRate,0) 
+        nextGeneration:list[list[City]] = elites + mutatePopulation(children, mutationRate) 
+        #print("elites  size: ", len(elites))
+        #print("elites  first: ", Fitness(elites[0]).routeDistance())
         #print("next generation size: ", len(nextGeneration))
-        return nextGeneration, None
+        return nextGeneration, []
     else:
         #<<<<< use archiv
         currentGenAndArchive = currentGen + archive
-        currentGenAndArchiveFitness = rankRoutes(currentGenAndArchive, objectiveNrUsed)
+        currentGenAndArchiveRanked:list[tuple[int,float]] = rankRoutes(currentGenAndArchive, objectiveNrUsed)
 
-        mating_candidates_indices, elites_indices = select_mating_candidates_and_elites(selectionNrUsed=selectionNrUsed, popRanked=currentGenAndArchiveFitness, eliteSize=eliteSize,breeding_rate=breeding_rate)
-        matingpool = get_individuals_by_indices(currentGenAndArchive, mating_candidates_indices)
-        # archiveSize = determineNonDominatedArchiveSize(popRanked)
-        children = breedPopulation(matingpool, len(currentGen)-eliteSize)
-        
+        mating_candidates_indices:list[int] = select_mating_candidates(selectionNrUsed=selectionNrUsed, popRanked=currentGenAndArchiveRanked, eliteSize=eliteSize,breeding_rate=breeding_rate)
+        elites_indices:list[int] = get_elites_indices(popRanked=currentGenAndArchiveRanked,eliteSize=eliteSize)
+
+        matingpool:list[list[City]] = get_individuals_by_indices(currentGenAndArchive, mating_candidates_indices)
         elites:list[list[City]] = get_individuals_by_indices(currentGenAndArchive, elites_indices)
+        
+        # archiveSize = determineNonDominatedArchiveSize(popRanked)
+        
+        children:list[list[City]] = breedPopulation(matingpool, len(currentGen)-eliteSize)
+        
         #eliteSize is used to maintain solutions that should be in an archive
-        nextGeneration = elites + mutatePopulation(children, mutationRate, 0)
+        nextGeneration:list[list[City]] = elites + mutatePopulation(children, mutationRate)
 
-        nextArchive = createNextArchive(population=currentGenAndArchive,rankedPopulation=currentGenAndArchiveFitness,archiveSize=archiveSize)
+        nextArchive = createNextArchive(population=currentGenAndArchive,rankedPopulation=currentGenAndArchiveRanked,archiveSize=archiveSize)
         
 
         return nextGeneration, nextArchive
