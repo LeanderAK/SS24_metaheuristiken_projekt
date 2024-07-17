@@ -1,44 +1,58 @@
 import numpy as np, random, operator, pandas as pd
 
 #Create a selection function that will be used to make the list of parent routes
-def select_mating_candidates_and_elites(selectionNrUsed:int, popRanked: list[tuple[int,float]], eliteSize) -> tuple[list[int],list[int]]: 
+def select_mating_candidates_and_elites(selectionNrUsed:int, popRanked: list[tuple[int,float]], eliteSize, breeding_rate:float) -> tuple[list[int],list[int]]: 
     """
-    selectionNrUsed: 
-        1: fitnessproportional solution
-        2: tournament-based selection
-        3: roulete-wheel selection
+    Params: 
+        selectionNrUsed: 
+            1: fitnessproportional solution
+            2: tournament-based selection
+            3: roulete-wheel selection
     
-    Return a 
-    [0] list of the route indexes selected for mating
-    [1] list of route indexes selected for the elites
+        popRanked should be a list[tuple[int,float]]  
+            [0] left int:  the population index of the actual Route
+            [1] right float:  the respective fitness value that was being used
+        
+        breeding_rate: 
+            a value between 0 and 1, ideally 0.2,0.3 or 0.5
+            thats the percentage of the population selected for mating
     
-    popRanked should be a list[tuple[int,float]]  
-        [0] left int:  the population index of the actual Route
-        [1] right float:  the respective fitness value that was being used
+    Returns 
+        a touple
+        [0] list of the route indexes selected for mating
+        [1] list of route indexes selected for the elites
+    
+    
     """
     
     selectionResults = []
     elites = []
     
-     #Elitism
-     #TODO this is not the right way to do elitism, elitism means the elite individuals will reach the next generation unchanged and are not part of the mating pool
+    # Seperate Elites
     for i in range(0, eliteSize):
         elites.append(popRanked[i][0])
+        
+    mating_pool_size = int(len(popRanked) * breeding_rate)
+    #print("mating pool size: " ,mating_pool_size)
     
-    if selectionNrUsed == 1: # fitness proportional
+    # fitness proportional
+    if selectionNrUsed == 1: 
         df = pd.DataFrame(np.array(popRanked), columns=["Index","Fitness"])
         df['cum_sum'] = df.Fitness.cumsum()
         df['cum_perc'] = 100*df.cum_sum/df.Fitness.sum()
         
         #we compare a randomly drawn number to these weights to select our mating pool
-        for i in range(0, len(popRanked) - eliteSize):
+        for i in range(0, mating_pool_size):
             pick = 100*random.random()
             for i in range(0, len(popRanked)):
                 if pick <= df.iat[i,3]:
                     selectionResults.append(popRanked[i][0])
                     break 
                 
-    elif selectionNrUsed == 2: # Turnierbasierte Selektion statt fitnessproportionaler Selektion
+        
+    
+    # Turnierbasierte Selektion statt fitnessproportionaler Selektion          
+    elif selectionNrUsed == 2: 
         tournamentSize = 2
         tournament_pop = popRanked[eliteSize:]
         while len(selectionResults) < len(popRanked):
@@ -51,12 +65,13 @@ def select_mating_candidates_and_elites(selectionNrUsed:int, popRanked: list[tup
             selectionResults.append(tournament[0][0])
             tournament_pop.remove(tournament[0])
             #tournament_pop.remove(tournament[1])
-        
-    elif selectionNrUsed == 3: #TODO: # roulette wheel by calculating a relative fitness weight for each individual
+    
+    #TODO: # roulette wheel by calculating a relative fitness weight for each individual    
+    elif selectionNrUsed == 3: 
         selectionResults = []
         #TODO
     
-    print("selection results length: ", len(selectionResults))
+    #print("selection results length: ", len(selectionResults))
 
     return selectionResults,elites
 

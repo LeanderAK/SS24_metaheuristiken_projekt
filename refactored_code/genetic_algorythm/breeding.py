@@ -1,8 +1,9 @@
 import random
 from .fitness import Fitness
+from .city import City
 
 #Create mating pool
-def get_individuals_by_indices(population, selectionResults):
+def get_individuals_by_indices(population: list[list[City]], selectionResults: list[int]) -> list[list[City]]:
     pool = []
     for i in range(0, len(selectionResults)):
         index = selectionResults[i]
@@ -35,14 +36,34 @@ def breed(parent1, parent2):
 
 
 #Create function to run crossover over full mating pool
-def breedPopulation(matingpool):
-    children = []
-    pool = random.sample(matingpool, len(matingpool))
+def breedPopulation(matingpool:list[list[City]], target_children_amount:int):
+    """_summary_
+
+    Args:
+        matingpool (list[list[City]]): the selected individuals that are going to breed
+        target_children_amount (int): how many children do we need?
+
+    Returns:
+        _type_: _description_
+    """
+    # for now we just go through the mating list over and over and select randomly from those -> this can be adjusted
+    # we dont have partners for life producing multiple children, our algoythm goes against marriage xD
+    children:list[list[City]] = []
 
     #we use the breed function to fill out the rest of the next generation.    
-    for i in range(0, len(matingpool)):
-        child = breed(pool[i], pool[len(matingpool)-i-1])
-        children.append(child)
+    while len(children) < target_children_amount: 
+        temp_mating_pool = matingpool.copy()
+        
+        while(len(temp_mating_pool) > 2):
+            partners = random.sample(temp_mating_pool,2)
+            temp_mating_pool.remove(partners[0])
+            temp_mating_pool.remove(partners[1])
+            children.append(breed(partners[0],partners[1]))
+            
+            if(len(children) == target_children_amount):
+                break
+    
+
     return children
 
 

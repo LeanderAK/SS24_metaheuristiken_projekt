@@ -17,27 +17,28 @@ import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
 #Finally, we then create our new generation using the breedPopulation function 
 # and then applying mutation using the mutatePopulation function. 
 
-def nextGeneration(objectiveNrUsed, selectionNrUsed, currentGen, eliteSize, mutationRate, archiveUsed) -> list[list[City]]: 
+def nextGeneration(objectiveNrUsed, selectionNrUsed, currentGen, eliteSize, breeding_rate, mutationRate, archiveUsed) -> list[list[City]]: 
    # rankRoutesBasedOnDominance(currentGen)
     #print("\n\n pop pre ranked",currentGen)
     popRanked = rankRoutes(currentGen,objectiveNrUsed)
     #print("\n\n pop ranked",popRanked)
     if (not archiveUsed):
-        mating_condidates_indices, elites_indices = select_mating_candidates_and_elites(selectionNrUsed, popRanked, eliteSize)
+        mating_condidates_indices, elites_indices = select_mating_candidates_and_elites(selectionNrUsed, popRanked, eliteSize, breeding_rate)
         
-        matingpool = get_individuals_by_indices(currentGen, mating_condidates_indices)
-        elites = get_individuals_by_indices(currentGen, elites_indices)
+        matingpool:list[list[City]] = get_individuals_by_indices(currentGen, mating_condidates_indices)
+        elites:list[list[City]] = get_individuals_by_indices(currentGen, elites_indices)
         #print("\n\n next selectionResults",matingpool)
-        children = breedPopulation(matingpool)
+        children:list[list[City]] = breedPopulation(matingpool, len(currentGen)-eliteSize)
         #print("\n\n next children",children)
-        nextGeneration = elites + mutatePopulation(children, mutationRate,0) 
+        nextGeneration:list[list[City]] = elites + mutatePopulation(children, mutationRate,0) 
+        #print("next generation size: ", len(nextGeneration))
     else:
         #<<<<< use archiv
         #TODO: ein festes Archiv vorsehen wie es im ursprünglichen SPEA2 vorgesehen ist 
         mating_condidates_indices = selectionWithArchive(popRanked)
         matingpool = get_individuals_by_indices(currentGen, mating_condidates_indices)
         archiveSize = determineNonDominatedArchiveSize(popRanked)
-        children = breedPopulation(matingpool)
+        children = breedPopulation(matingpool, len(currentGen)-eliteSize)
         
         
         #eliteSize is used to maintain solutions that should be in an archive
@@ -46,7 +47,7 @@ def nextGeneration(objectiveNrUsed, selectionNrUsed, currentGen, eliteSize, muta
     return nextGeneration
 
 
-def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, population_genes, popSize, eliteSize, mutationRate, generations):
+def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, population_genes, popSize, eliteSize, breeding_rate, mutationRate, generations):
     #create initial population
     population = initialPopulation(initialPopNrUsed, popSize, population_genes)
     
@@ -81,7 +82,7 @@ def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, populat
         if(i%10 == 0):
             print(f'\r... computing - generation: {i + 1}/{generations}', end='')
         #print(i, end=", ")
-        population = nextGeneration(objectiveNrUsed, selectionNrUsed, population, eliteSize, mutationRate,archiveUsed)
+        population = nextGeneration(objectiveNrUsed, selectionNrUsed, population, eliteSize, breeding_rate, mutationRate,archiveUsed)
         #store infos to plot progress when finished
         progressDistance.append(1 / rankRoutes(population,1)[0][1])
         progressStress.append(1 / rankRoutes(population,2)[0][1])
