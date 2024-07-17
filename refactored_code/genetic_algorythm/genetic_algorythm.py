@@ -17,13 +17,13 @@ import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
 #Finally, we then create our new generation using the breedPopulation function 
 # and then applying mutation using the mutatePopulation function. 
 
-def nextGeneration(currentGen, eliteSize, mutationRate, objectiveNrUsed, archiveUsed) -> list[list[City]]: 
+def nextGeneration(objectiveNrUsed, selectionNrUsed, currentGen, eliteSize, mutationRate, archiveUsed) -> list[list[City]]: 
    # rankRoutesBasedOnDominance(currentGen)
     #print("\n\n pop pre ranked",currentGen)
     popRanked = rankRoutes(currentGen,objectiveNrUsed)
     #print("\n\n pop ranked",popRanked)
     if (not archiveUsed):
-        selectionResults = selection(popRanked, eliteSize)
+        selectionResults = selection(selectionNrUsed, popRanked, eliteSize)
         
         matingpool = matingPool(currentGen, selectionResults)
         #print("\n\n next selectionResults",matingpool)
@@ -45,7 +45,7 @@ def nextGeneration(currentGen, eliteSize, mutationRate, objectiveNrUsed, archive
     return nextGeneration
 
 
-def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, population_genes, popSize, eliteSize, mutationRate, generations):
+def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, population_genes, popSize, eliteSize, mutationRate, generations):
     #create initial population
     population = initialPopulation(initialPopNrUsed, popSize, population_genes)
     
@@ -80,7 +80,7 @@ def geneticAlgorithm(objectiveNrUsed, initialPopNrUsed, population_genes, popSiz
         if(i%10 == 0):
             print(f'\r... computing - generation: {i + 1}/{generations}', end='')
         #print(i, end=", ")
-        population = nextGeneration(population, eliteSize, mutationRate,objectiveNrUsed,archiveUsed)
+        population = nextGeneration(objectiveNrUsed, selectionNrUsed, population, eliteSize, mutationRate,archiveUsed)
         #store infos to plot progress when finished
         progressDistance.append(1 / rankRoutes(population,1)[0][1])
         progressStress.append(1 / rankRoutes(population,2)[0][1])
