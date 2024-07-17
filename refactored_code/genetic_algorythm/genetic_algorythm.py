@@ -47,32 +47,29 @@ def nextGeneration(selectionNrUsed, currentGen, eliteSize, mutationRate, objecti
         nextArchive = nonDiminatedCurrentGenAndArchive
 
         # if |A(g+1)| > N: entferne nicht dominierte Individuen aus A(g+1)
-        # if len(nextArchive) > archiveSize:
-            # archiveFitness = rankRoutes(nextArchive, objectiveNrUsed=3)
-            # nonDominatedNextArchive = determineNonDominatedArchive(nextArchive, archiveFitness)
-            # nextArchive = [i for i in nextArchive if i not in nonDiminatedCurrentGenAndArchive]
         if len(nextArchive) > archiveSize:
             nextArchive = nextArchive[:archiveSize]
 
         # else if |A(g+1)| < N: Fülle A(g+1) mit dominierten Individuen aus P(g) und A(g) auf
         elif len(nextArchive) < archiveSize:
             dominatedPopAndArch = [i for i in currentGenAndArchive if i not in nonDiminatedCurrentGenAndArchive]
-            nextArchive += dominatedPopAndArch[:archiveSize]
+
+            nextArchive += dominatedPopAndArch[:archiveSize-len(nextArchive)]
 
         # Elternselektion: Turnierselektion von A(g+1)
         nextArchiveFitness = rankRoutes(nextArchive, objectiveNrUsed=3)
         selectionResults = selectionWithArchive(selectionNrUsed=selectionNrUsed, archiveRanked=nextArchiveFitness)
 
         # Variation: erstelle durch rekombination und mutation die Population P(g+1)
-
+        # Nimmt indexe aus selectionResults und returned die tatsächlichen Routen
         matingpool = matingPool(nextArchive, selectionResults)
+
         # Neue Population P(g+1)
         children = breedPopulation(matingpool, 0)
         #eliteSize is used to maintain solutions that should be in an archive
         nextGeneration = mutatePopulation(children, mutationRate, 0)
 
         return nextGeneration, nextArchive
-
 
 def geneticAlgorithm(objectiveNrUsed, selectionNrUsed, population_genes, popSize, eliteSize, mutationRate, generations, archiveSize = None):
     #create initial population
