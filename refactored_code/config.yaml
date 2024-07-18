@@ -1,0 +1,31 @@
+# Algorithm Parameters
+popSize: [200]
+eliteSize: [10]
+breeding_rate: [0.3]
+mutationRate: [0.0005]
+generations: [400]
+archiveSize: [20]
+
+# Number of random combinations from algorithm parameters chosen
+randomSearchIterations: 1
+
+# Objective that is optimised: 
+# 1 : Distance minimization
+# 2 : Stress minimization
+# 3 : Distance and Stress minimization
+objectiveNrUsed: 3
+
+initialPopNrUsed: 1
+
+# Selection type used
+# 1 : Fitnessproportional
+# 2 : tournament based
+selectionNrUsed: 2
+
+archiveUsed: True
+
+# Amount of information plotted
+# 0 : plot nothing
+# 1 : plot final solution
+# 2 : plot initial solution, stress and distance progress and final solution
+plotLevel: 0

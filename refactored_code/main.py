@@ -1,4 +1,5 @@
 
+import yaml
 from genetic_algorythm.fitness import Fitness
 from genetic_algorythm.city import City
 from genetic_algorythm.initial_population import City
@@ -41,52 +42,56 @@ for nr in cityNumbersRoute1:
 #                             popSize=200, eliteSize=20, mutationRate=0.01, generations=500)
 
 
-def evaluate_ga_parameters(objectiveNrUsed, initialPopNrUsed, selectionNrUsed, population_genes,
-                                popSize, eliteSize, breeding_rate, mutationRate, generations, archiveSize):
+def evaluate_ga_parameters(
+        objectiveNrUsed, initialPopNrUsed, selectionNrUsed, 
+        population_genes, popSize, eliteSize, breeding_rate, 
+        mutationRate, generations, archiveUsed, archiveSize,
+        plot_level
+    ):
     
-    bestRoute, bestRouteFitness = geneticAlgorithm(objectiveNrUsed=objectiveNrUsed, initialPopNrUsed=initialPopNrUsed, selectionNrUsed=selectionNrUsed, population_genes=population_genes,
-                                popSize=popSize, eliteSize=eliteSize, breeding_rate=breeding_rate, mutationRate=mutationRate, generations=generations, archiveSize=archiveSize)
-    
-    return bestRouteFitness
-
-param_space = {
-    'popSize': [100,200],
-    'eliteSize': [10, 20],
-    'breeding_rate': [0.1, 0.3],
-    'mutationRate': [0.002, 0.001, 0.0005],
-    'generations': [400, 500],
-    'archiveSize': [10, 20]
-}
-
-# List to store results
-results = []
-
-n_samples = 20
-for _ in range(n_samples):
-    popSize = random.choice(param_space['popSize'])
-    eliteSize = random.choice(param_space['eliteSize'])
-    breeding_rate = random.choice(param_space['breeding_rate'])
-    mutationRate = random.choice(param_space['mutationRate'])
-    generations = random.choice(param_space['generations'])
-    archiveSize = random.choice(param_space['archiveSize'])
-    
-    score = evaluate_ga_parameters(
-        objectiveNrUsed = 3, 
-        initialPopNrUsed = 1, 
-        selectionNrUsed = 2, 
-        population_genes = all_cities,
-        popSize = popSize,
-        eliteSize = eliteSize, 
-        breeding_rate = breeding_rate, 
-        mutationRate = mutationRate, 
-        generations = generations, 
-        archiveSize = archiveSize
+    bestRoute, bestRouteFitness = geneticAlgorithm(
+        objectiveNrUsed=objectiveNrUsed, initialPopNrUsed=initialPopNrUsed, 
+        selectionNrUsed=selectionNrUsed, population_genes=population_genes,
+        popSize=popSize, eliteSize=eliteSize, breeding_rate=breeding_rate, 
+        mutationRate=mutationRate, generations=generations, archiveUsed=archiveUsed, 
+        archiveSize=archiveSize, plot_level=plot_level
     )
-    results.append((score, popSize, eliteSize, breeding_rate, mutationRate, generations, archiveSize))
+    
+    return bestRoute, bestRouteFitness
 
-# Find the best parameters
-best_result = min(results, key=lambda x: x[0])
-best_score, best_popSize, best_eliteSize, best_breeding_rate, best_mutationRate, best_generations, best_archiveSize = best_result
+# Load settings from config.yaml
+with open('refactored_code/config.yaml', 'r') as file:
+    config_yaml = yaml.safe_load(file)
 
-print(f'Best Fitness Score: {best_score}')
-print(f'Best Parameters - popSize: {best_popSize}, eliteSize: {best_eliteSize}, breedingRate: {best_breeding_rate} mutationRate: {best_mutationRate}, generations: {best_generations}, archiveSize: {best_archiveSize}')
+    results = []
+    for _ in range(config_yaml.get('randomSearchIterations', 1)):
+        
+        popSizeInstance = random.choice(config_yaml['popSize'])
+        eliteSizeInstance = random.choice(config_yaml['eliteSize'])
+        breeding_rateInstance = random.choice(config_yaml['breeding_rate'])
+        mutationRateInstance = random.choice(config_yaml['mutationRate'])
+        generationsInstance = random.choice(config_yaml['generations'])
+        archiveSizeInstance = random.choice(config_yaml['archiveSize'])
+        
+        bestRoute, bestFitnessScore = evaluate_ga_parameters(
+            objectiveNrUsed=config_yaml['objectiveNrUsed'], 
+            initialPopNrUsed=config_yaml['initialPopNrUsed'], 
+            selectionNrUsed=config_yaml['selectionNrUsed'], 
+            population_genes=all_cities,
+            popSize=popSizeInstance,
+            eliteSize=eliteSizeInstance, 
+            breeding_rate=breeding_rateInstance, 
+            mutationRate=mutationRateInstance, 
+            generations=generationsInstance, 
+            archiveUsed=config_yaml['archiveUsed'],
+            archiveSize=archiveSizeInstance, 
+            plot_level=config_yaml['plotLevel']
+        )
+        results.append((bestFitnessScore, popSizeInstance, eliteSizeInstance, breeding_rateInstance, mutationRateInstance, generationsInstance, archiveSizeInstance))
+
+    # Find the best parameters
+    best_result = min(results, key=lambda x: x[0])
+    best_score, best_popSize, best_eliteSize, best_breeding_rate, best_mutationRate, best_generations, best_archiveSize = best_result
+
+    print(f'Best Fitness Score: {best_score}')
+    print(f'Best Parameters - popSize: {best_popSize}, eliteSize: {best_eliteSize}, breedingRate: {best_breeding_rate} mutationRate: {best_mutationRate}, generations: {best_generations}, archiveSize: {best_archiveSize}')
