@@ -1,7 +1,7 @@
 # Algorithm Parameters
 popSize: [200]
 eliteSize: [20]
-breeding_rate: [1]
+breeding_rate: [0.5]
 mutationRate: [0.01]
 generations: [250]
 archiveSize: [20]
@@ -32,4 +32,5 @@ archiveUsed: True
 # 0 : plot nothing
 # 1 : plot final solution
 # 2 : plot initial solution, stress and distance progress and final solution
-plotLevel: 0
+# 3 : verbose plotting, plot every step of the solution for detailed debugging
+plotLevel: 2

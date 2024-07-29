@@ -128,18 +128,20 @@ def geneticAlgorithm(
         #store infos to plot progress when finished
         progressDistance.append(1 / rankRoutes(population,1)[0][1])
         progressStress.append(1 / rankRoutes(population,2)[0][1])
+        
+        if plot_level > 2:
+            plotPopulationAndObjectiveValues(population, f"Generation: {i}",archive)
 
     print("\n Done!")
         
-    # plot progress - distance
     if plot_level > 1:
+        # plot progress - distance
         plt.plot(progressDistance)
         plt.ylabel('Distance')
         plt.xlabel('Generation')
         plt.title('Progress of Distance Minimization')
         plt.show()
-    # plot progress - stress
-    if plot_level > 1:
+        # plot progress - stress
         plt.plot(progressStress)
         plt.ylabel('Stress')
         plt.xlabel('Generation')
