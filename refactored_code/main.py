@@ -25,39 +25,6 @@ route1 = []
 for nr in cityNumbersRoute1:
     route1.append(getCityBasedOnNr(all_cities,nr)) #to delete? 
     
-#initialSolutionsList:list[list[City]] = get(all_cities)
-#initialSolutionsList:list[Fitness] = []
-#skip for now see, weather it still works
-
-
-#Run the genetic algorithm
-#modify parameters popSize, eliteSize, mutationRate, generations to search for the best solution
-#modify objectiveNrUsed to use different objectives:
-# 1= Minimize distance, 2 = Minimize stress, 3 = MinimizeBoth
-
-# bestRoute = geneticAlgorithm(objectiveNrUsed=1, specialInitialSolutions = initialSolutionsList, population_genes=all_cities,
-#                               popSize=5, eliteSize=2, mutationRate=0.01, generations=2)
-
-# bestRoute = geneticAlgorithm(objectiveNrUsed=1, population_genes=all_cities,
-#                             popSize=200, eliteSize=20, mutationRate=0.01, generations=500)
-
-
-def evaluate_ga_parameters(
-        objectiveNrUsed, initialPopNrUsed, selectionNrUsed, 
-        population_genes, popSize, eliteSize, breeding_rate, 
-        mutationRate, generations, archiveUsed, archiveSize,
-        plot_level
-    ):
-    
-    bestRoute, bestRouteFitness = geneticAlgorithm(
-        objectiveNrUsed=objectiveNrUsed, initialPopNrUsed=initialPopNrUsed, 
-        selectionNrUsed=selectionNrUsed, population_genes=population_genes,
-        popSize=popSize, eliteSize=eliteSize, breeding_rate=breeding_rate, 
-        mutationRate=mutationRate, generations=generations, archiveUsed=archiveUsed, 
-        archiveSize=archiveSize, plot_level=plot_level
-    )
-    
-    return bestRoute, bestRouteFitness
 
 # Load settings from config.yaml
 with open('refactored_code/config.yaml', 'r') as file:
@@ -73,7 +40,7 @@ with open('refactored_code/config.yaml', 'r') as file:
         generationsInstance = random.choice(config_yaml['generations'])
         archiveSizeInstance = random.choice(config_yaml['archiveSize'])
         
-        bestRoute, bestFitnessScore = evaluate_ga_parameters(
+        bestRoute, bestFitnessScore = geneticAlgorithm(
             objectiveNrUsed=config_yaml['objectiveNrUsed'], 
             initialPopNrUsed=config_yaml['initialPopNrUsed'], 
             selectionNrUsed=config_yaml['selectionNrUsed'], 
