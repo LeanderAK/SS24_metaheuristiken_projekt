@@ -102,9 +102,9 @@ def geneticAlgorithm(
         plotPopulationAndObjectiveValues(population, "Initial Population")
     
     #store infos to plot progress when finished
-    progressDistance = []
+    progressDistance:list[float] = []
     progressDistance.append(1 / rankRoutes(population,1)[0][1])
-    progressStress = []
+    progressStress:list[float] = []
     progressStress.append(1 / rankRoutes(population,2)[0][1])
     
     
@@ -130,23 +130,14 @@ def geneticAlgorithm(
         progressStress.append(1 / rankRoutes(population,2)[0][1])
         
         if plot_level > 2:
-            plotPopulationAndObjectiveValues(population, f"Generation: {i}",archive)
+            plotPopulationAndObjectiveValues(population, f"Generation: {i+1}",archive)
 
     print("\n Done!")
         
     if plot_level > 1:
-        # plot progress - distance
-        plt.plot(progressDistance)
-        plt.ylabel('Distance')
-        plt.xlabel('Generation')
-        plt.title('Progress of Distance Minimization')
-        plt.show()
-        # plot progress - stress
-        plt.plot(progressStress)
-        plt.ylabel('Stress')
-        plt.xlabel('Generation')
-        plt.title('Progress of Stress Minimization')
-        plt.show()
+        plotProgress(progressDistance,'Distance')
+        plotProgress(progressStress,'Stress')
+
     
     #provide statistics about best final solution with regard to chosen objective
     if (objectiveNrUsed == 1 or objectiveNrUsed == 2):

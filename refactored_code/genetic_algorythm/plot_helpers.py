@@ -40,3 +40,11 @@ def plotRoute(cityList, title):
     plt.xlabel('X-Coordinate')
     plt.title(title)
     plt.show()  
+    
+    
+def plotProgress(progress: list[float], label:str):
+    plt.plot(progress)
+    plt.ylabel(label)
+    plt.xlabel('Generation')
+    plt.title(f'Progress of {label} Minimization')
+    plt.show()
