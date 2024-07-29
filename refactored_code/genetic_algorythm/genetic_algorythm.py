@@ -44,7 +44,7 @@ def nextGeneration(objectiveNrUsed, selectionNrUsed, currentGen, eliteSize, bree
         #print("next generation size: ", len(nextGeneration))
         return nextGeneration, []
     else:
-        #<<<<< use archiv
+      
         currentGenAndArchive = currentGen + archive
         currentGenAndArchiveRanked:list[tuple[int,float]] = rankRoutes(currentGenAndArchive, objectiveNrUsed)
 
@@ -60,10 +60,8 @@ def nextGeneration(objectiveNrUsed, selectionNrUsed, currentGen, eliteSize, bree
         
         #eliteSize is used to maintain solutions that should be in an archive
         nextGeneration:list[list[City]] = elites + mutatePopulation(children, mutationRate)
-
         nextArchive = createNextArchive(population=currentGenAndArchive,rankedPopulation=currentGenAndArchiveRanked,archiveSize=archiveSize)
         
-
         return nextGeneration, nextArchive
     
 
@@ -81,8 +79,6 @@ def geneticAlgorithm(
     #create initial population
     population = initialPopulation(initialPopNrUsed, popSize, population_genes)
     
-    #archiveUsed = False
-    
     #provide statistics about best initial solution with regard to chosen objective
     if (objectiveNrUsed == 1 or objectiveNrUsed == 2):
         print("Initial objective: " + str(1 / rankRoutes(population,objectiveNrUsed)[0][1]))
@@ -95,7 +91,6 @@ def geneticAlgorithm(
         print("Initial highest fitness value: " + str(rankRoutes(population,objectiveNrUsed)[0][1]))
         print("Initial best distance value: " + str(1/ rankRoutes(population,1)[0][1]))
         print("Initial best stress value: " + str(1/ rankRoutes(population,2)[0][1]))
-        #archiveUsed = True
     
     #plot intial population with regard to the two objectives
     if plot_level > 1:
@@ -113,7 +108,6 @@ def geneticAlgorithm(
     for i in range(0, generations):
         if(i%10 == 0):
             print(f'\r... computing - generation: {i + 1}/{generations}', end='')
-        #print(i, end=", ")
         population, archive = nextGeneration(
             objectiveNrUsed=objectiveNrUsed,
             selectionNrUsed=selectionNrUsed, 
@@ -147,7 +141,6 @@ def geneticAlgorithm(
         print("Final distance : " + str(Fitness(bestRoute).routeDistance()))
         print("Final stress:    " + str(Fitness(bestRoute).routeStress()))
         
-        #Provide special initial solutions    <<<<<<<<<<<
         #print city Indizes for initial solution
         bestRouteIndices = []
         for city in bestRoute:
@@ -176,6 +169,5 @@ def geneticAlgorithm(
         return bestRoute, bestRouteFitness
     #plot final population with regard to the two objectives
     
-
     
     return bestRoute, None
