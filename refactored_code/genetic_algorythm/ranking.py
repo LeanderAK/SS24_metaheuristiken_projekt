@@ -1,6 +1,8 @@
 from .fitness import Fitness
 import operator
 from .other_helper_functions import *
+from pymoo.indicators.hv import HV
+import numpy as np
 
 
 def rankRoutes(population, objectiveNrUsed) -> list[tuple[int,float]]:
@@ -85,3 +87,32 @@ def rankRoutesBasedOnDominance(population):
         fitnessValuesPerIndividuum[i][5] = fitnessValuesPerIndividuum[i][4] + d_i
         fitnessResults[i] = 1/fitnessValuesPerIndividuum[i][5] #damit größte Fitness = beste
     return fitnessResults 
+
+def get_hypervolume_value(pareto_front_city_list:list[list[City]]):
+    reference_point = [3000,7000] #this is a maximum point throughout almost every generation
+    
+    pareto_front = []
+    
+    for route in pareto_front_city_list:
+        pareto_front.append([Fitness(route).routeDistance(),Fitness(route).routeStress()])
+    
+    pareto_front = np.array(pareto_front)
+    
+    hv_indicator = HV(ref_point=reference_point)
+    hypervolume_value = hv_indicator.do(pareto_front)
+    
+    
+   
+    
+    return hypervolume_value
+
+def reformat_hypervolume_value(value):
+    value = int(value)
+     #reformat value
+    # Reverse the string (for easier insertion of spaces)
+    reversed_str = str(value)[::-1] 
+    # Insert spaces every 3 characters
+    formatted_str = " ".join(reversed_str[i:i+3] for i in range(0, len(reversed_str), 3))
+    # Reverse back to the original order
+    formatted_number = formatted_str[::-1]
+    return formatted_number

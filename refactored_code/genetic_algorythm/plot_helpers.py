@@ -1,5 +1,8 @@
 #Final step: create the genetic algorithm
 from matplotlib import pyplot as plt
+from matplotlib.patches import Rectangle
+
+from .city import City
 from .fitness import Fitness
 
 
@@ -46,5 +49,38 @@ def plotProgress(progress: list[float], label:str):
     plt.plot(progress)
     plt.ylabel(label)
     plt.xlabel('Generation')
-    plt.title(f'Progress of {label} Minimization')
+    if(label == "Hypervolume"):
+        plt.title(f'Progress of {label} Maximization')
+    else:
+        plt.title(f'Progress of {label} Minimization')
+    plt.show()
+
+def plot_hypervolume(city_list:list[list[City]]):
+    "city list - array of arrays wiht [x,y] values"
+    
+    distance = []
+    stress = []
+    for route in city_list:
+        distance.append(Fitness(route).routeDistance())
+        stress.append(Fitness(route).routeStress())
+    
+    
+    reference_point = [3000,7000] #this is a maximum point throughout almost every generation
+    
+    plt.figure(figsize=(8,6))
+    # Draw front only
+    plt.scatter(distance, stress, label='Pareto Front')
+    # Draw volume
+    for point in zip(distance,stress):
+        # plt.fill_between([point[0], reference_point[0]], [point[1],reference_point[1]], alpha=1,color='orange')
+        width = reference_point[0] - point[0]
+        height = reference_point[1] - point[1]
+        rect = Rectangle((point[0], point[1]), width, height, color='orange', alpha=1)
+        plt.gca().add_patch(rect)
+        
+    plt.ylabel('Stress')
+    plt.xlabel('Distance')
+    plt.title('Pareto Front and Hypervolume')
+    plt.legend()
+    plt.grid(True)
     plt.show()

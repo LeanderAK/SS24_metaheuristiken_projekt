@@ -142,8 +142,8 @@ def isSameSolution(individuumA, individuumB):
     return isSameSolution
 
 def createNextArchive(population, rankedPopulation, archiveSize):
-    nonDiminatedCurrentGenAndArchive = determineNonDominatedArchive(population, rankedPopulation)
-    nextArchive = nonDiminatedCurrentGenAndArchive
+    nonDominatedCurrentGenAndArchive = determineNonDominatedArchive(population, rankedPopulation)
+    nextArchive = nonDominatedCurrentGenAndArchive
 
     if len(nextArchive) > archiveSize:
         # TODO remove worst first
@@ -152,7 +152,7 @@ def createNextArchive(population, rankedPopulation, archiveSize):
     # else if |A(g+1)| < N: Fülle A(g+1) mit dominierten Individuen aus P(g) und A(g) auf
     elif len(nextArchive) < archiveSize:
         # TODO add best first
-        dominatedPopAndArch = [i for i in population if i not in nonDiminatedCurrentGenAndArchive]
+        dominatedPopAndArch = [i for i in population if i not in nonDominatedCurrentGenAndArchive]
         nextArchive += dominatedPopAndArch[:archiveSize-len(nextArchive)]
 
     return nextArchive

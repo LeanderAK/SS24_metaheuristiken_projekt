@@ -98,8 +98,10 @@ def geneticAlgorithm(
     
     #store infos to plot progress when finished
     progressDistance:list[float] = []
-    progressDistance.append(1 / rankRoutes(population,1)[0][1])
     progressStress:list[float] = []
+    progressHyperVolume:list[float] = []
+    
+    progressDistance.append(1 / rankRoutes(population,1)[0][1])
     progressStress.append(1 / rankRoutes(population,2)[0][1])
     
     
@@ -122,6 +124,9 @@ def geneticAlgorithm(
         #store infos to plot progress when finished
         progressDistance.append(1 / rankRoutes(population,1)[0][1])
         progressStress.append(1 / rankRoutes(population,2)[0][1])
+        if(objectiveNrUsed == 3 and len(archive) > 0):
+            progressHyperVolume.append(get_hypervolume_value(archive))
+
         
         if plot_level > 2:
             plotPopulationAndObjectiveValues(population, f"Generation: {i+1}",archive)
@@ -131,6 +136,8 @@ def geneticAlgorithm(
     if plot_level > 1:
         plotProgress(progressDistance,'Distance')
         plotProgress(progressStress,'Stress')
+        if(objectiveNrUsed == 3 and len(archive) > 0):
+            plotProgress(progressHyperVolume,'Hypervolume')
 
     
     #provide statistics about best final solution with regard to chosen objective
@@ -157,14 +164,22 @@ def geneticAlgorithm(
         print("Final highest fitness value: " + str(rankRoutes(population,objectiveNrUsed)[0][1]))
         print("Final best distance value: " + str(1/ rankRoutes(population,1)[0][1]))
         print("Final best stress value: " + str(1/ rankRoutes(population,2)[0][1]))
+        if( len(archive) > 0):
+            hypervolume_value = get_hypervolume_value(archive)
+            print("final hypervolume value: ", reformat_hypervolume_value(hypervolume_value))
+        
+        
         bestRouteIndex = rankRoutes(population,objectiveNrUsed)[0][0]
         bestRouteFitness = rankRoutes(population,objectiveNrUsed)[0][1]
         bestRoute = population[bestRouteIndex]
         #TODO: ein festes Archiv vorsehen wie es im ursprünglichen SPEA2 vorgesehen ist
         # dann alle Lösungen ausgeben die im Archiv sind
 
+        
         if plot_level > 0:
             plotPopulationAndObjectiveValues(population, "Final Population",archive)
+            if( len(archive) > 0):
+                plot_hypervolume(archive)
         
         return bestRoute, bestRouteFitness
     #plot final population with regard to the two objectives

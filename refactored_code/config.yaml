@@ -1,10 +1,19 @@
 # Algorithm Parameters
-popSize: [200]
-eliteSize: [20]
-breeding_rate: [0.5]
+# popSize: [50,150,300,500]
+# eliteSize: [20,50,100,150]
+# breeding_rate: [0.1,0.2,0.3,0.5]
+# mutationRate: [0.001,0.01,0.05,0.1]
+# generations: [100,300,500,1000]
+# archiveSize: [20,50,100,150]
+
+popSize: [150]
+eliteSize: [40]
+breeding_rate: [0.2]
 mutationRate: [0.01]
-generations: [250]
-archiveSize: [20]
+generations: [62]
+archiveSize: [40]
+
+
 
 # Number of random combinations from algorithm parameters chosen
 randomSearchIterations: 1
@@ -19,7 +28,7 @@ objectiveNrUsed: 3
 # 1 : None
 # 2 : Smallest Distances
 # 3 : Best Solutions from single objective solutions for stress and distance
-initialPopNrUsed: 1
+initialPopNrUsed: 3
 
 # Selection type used
 # 1 : Fitnessproportional

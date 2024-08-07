@@ -8,6 +8,7 @@ from genetic_algorythm.genetic_algorythm import geneticAlgorithm
 import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
 
 
+
 #Running the genetic algorithm
 #Create list of cities
 all_cities:list[City] = []
